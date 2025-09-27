@@ -109,6 +109,7 @@ class LazyDijkstra(Scene):
         vertecies[startingVertexIndex].distance = 0
         priorityQueue: list = []
         priorityQueue.append((startingVertexIndex, 0)) # index, distance
+        self.ShowDistance(vertecies[startingVertexIndex])
 
         # visuals
         self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
@@ -131,6 +132,7 @@ class LazyDijkstra(Scene):
                 newDistance: float = vertecies[index].distance + edge.weight
                 if newDistance < vertecies[edgeVertexIndex].distance:
                     vertecies[edgeVertexIndex].distance = newDistance
+                    self.ShowDistance(vertecies[edgeVertexIndex])
                     
                     vertexIndex: int = self.GetIndexFromFirstItemOfAToupleOfAList(priorityQueue, edgeVertexIndex)
                     if (vertexIndex != -1): # If we found it, remove it
@@ -145,7 +147,8 @@ class LazyDijkstra(Scene):
                     # visuals
                     self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
                 self.UnhighlightEdge(edge)
-            self.UnhighlightVertex(vertecies[index])
+                 
+            self.MarkVertexAsVisited(vertecies[index])
 
     def GetTheNearestItem(self, list: list):
         nearestDistance: float = float('inf')
@@ -180,8 +183,8 @@ class LazyDijkstra(Scene):
         circle: Circle = vertex.visual[0]
         text: Text = vertex.visual[1]
         animation: AnimationGroup = AnimationGroup(
-            circle.animate.set_stroke(color=RED),
-            text.animate.set_color(color=RED)
+            circle.animate.set_stroke(color=WHITE),
+            text.animate.set_color(color=WHITE)
         )
 
         self.play(animation)
@@ -194,7 +197,31 @@ class LazyDijkstra(Scene):
     def UnhighlightEdge(self, edge: Edge):
         arrow: Circle = edge.visual[0]
 
-        self.play(arrow.animate.set_stroke(color=WHITE).set_fill(color=WHITE))
+        self.play(arrow.animate.set_stroke(color=LIGHT_GRAY).set_fill(color=LIGHT_GRAY))
+
+    # Markings
+    def MarkVertexAsVisited(self, vertex: Vertex):
+        circle: Circle = vertex.visual[0]
+        text: Text = vertex.visual[1]
+        animation: AnimationGroup = AnimationGroup(
+            circle.animate.set_stroke(color=GREEN),
+            text.animate.set_color(color=GREEN)
+        )
+
+        self.play(animation)
+
+    # Distance
+    def ShowDistance(self, vertex: Vertex):
+        distance: Text = vertex.visual[2]
+
+        self.play(Unwrite(distance))
+
+        vertex.visual.remove(distance)
+
+        newDistanceText = Text(str(vertex.distance), color=RED, font_size=16).move_to(distance.get_center())
+        newDistanceText.move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
+        self.play(ReplacementTransform(distance, newDistanceText))
+        vertex.visual.add(newDistanceText)
 
     # -- AI GENEREATED METHOD --
     def UpdatePriorityQueueVisuals(self, priorityQueue, vertecies, visuals,
@@ -249,7 +276,7 @@ class LazyDijkstra(Scene):
                 newText = Text(
                     vertecies[index].name + " -> " + str(vertecies[index].distance),
                     font_size=30
-                ).move_to(newPos)
+                ).move_to(newPos, aligned_edge=DOWN)
                 visuals.append((index, newText))
                 self.play(Write(newText))
 
@@ -279,6 +306,12 @@ class LazyDijkstra(Scene):
             animations.append(Create(circle))
             animations.append(Write(text))
 
+        for vertex in graph.vertices:
+            distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
+            vertex.visual.add(distanceText)
+            self.add(distanceText)
+
+
         # Add every edge to the animations
         for edge in graph.edges:
             arrow = edge.visual
@@ -289,19 +322,19 @@ class LazyDijkstra(Scene):
 
     def GetGraph(self, position) -> Graph:
         # Create all vertices
-        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-3, 0, 0]), color=RED)
-        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-1.5, 1.5, 0]), color=RED)
-        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-1.5, -1.5, 0]), color=RED)
-        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), color=RED)
-        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), color=RED)
+        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-3, 0, 0]), color=WHITE)
+        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-1.5, 1.5, 0]), color=WHITE)
+        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-1.5, -1.5, 0]), color=WHITE)
+        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), color=WHITE)
+        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), color=WHITE)
 
         # Create all edges
-        startToA: Edge = Edge(vStart, vA, 4, color=WHITE)
-        startToB: Edge = Edge(vStart, vB, 1, color=WHITE)
-        bToA: Edge = Edge(vB, vA, 2, color=WHITE)
-        bToC: Edge = Edge(vB, vC, 5, color=WHITE)
-        aToC: Edge = Edge(vA, vC, 1, color=WHITE)
-        cToTarget: Edge = Edge(vC, vTarget, 3, color=WHITE)
+        startToA: Edge = Edge(vStart, vA, 4, color=LIGHT_GRAY)
+        startToB: Edge = Edge(vStart, vB, 1, color=LIGHT_GRAY)
+        bToA: Edge = Edge(vB, vA, 2, color=LIGHT_GRAY)
+        bToC: Edge = Edge(vB, vC, 5, color=LIGHT_GRAY)
+        aToC: Edge = Edge(vA, vC, 1, color=LIGHT_GRAY)
+        cToTarget: Edge = Edge(vC, vTarget, 3, color=LIGHT_GRAY)
 
         # Create the array
         vertices: list = [vStart, vA, vB, vC, vTarget]

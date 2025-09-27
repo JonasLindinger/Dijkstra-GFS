@@ -5,22 +5,25 @@ class Vertex():
     def __init__(self, name: str, position, color):
         self.name: str = name
         self.position = position
-        self.visual: Group = self.GetVisual(color)
         self.distance = float("inf")
         self.visited: bool = False
         self.outgoingEdges: list = []
 
+        self.visual: Group = self.GetVisual(color)
+
     def GetVisual(self, color) -> Group:
+        # Circle for the vertex
         visual: Circle = Circle(radius=0.75, color=color).move_to(self.position)
-        text: Text = Text(self.name, color=color, font_size=75)
+    
+        # Vertex name text
+        text: Text = Text(self.name, color=color, font_size=55)
+        text.move_to(visual.get_center())  # center on circle
+        text.shift(UP * 0.1)               # shift a bit upward
 
-        # Center the text on the circle
-        text.move_to(visual.get_center())
-
-        # Group them
+        # Group them together
         vertex: Group = Group(
             visual,
-            text
+            text,
         ).scale(0.5)
 
         return vertex
