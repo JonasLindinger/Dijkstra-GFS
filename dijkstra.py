@@ -2,11 +2,8 @@ class Dijkstra():
     def __init__(self):
         pass
 
-    def Run(self, vertecies: list, startingVertexIndex: int) -> list:
-        verteciesCount: int = len(vertecies)
-        visited: list = self.CreateVisitedList(verteciesCount)
-        distances: list = self.CreateDistanceList(verteciesCount)
-        distances[startingVertexIndex] = 0
+    def RunLazy(self, vertecies: list, startingVertexIndex: int):
+        vertecies[startingVertexIndex].distance = 0
         priorityQueue: list = []
         priorityQueue.append((startingVertexIndex, 0)) # index, distance
         while len(priorityQueue) != 0:
@@ -14,13 +11,13 @@ class Dijkstra():
             priorityQueue.remove(item)
             index: int = item[0]
             # distance: float = item[1] <- no need for it
-            visited[index] = True
+            vertecies[index].visited = True
             for edge in vertecies[index].outgoingEdges:
                 edgeVertexIndex: int = vertecies.index(edge.to)
-                if visited[edgeVertexIndex]: continue
-                newDistance: float = distances[index] + edge.weight
-                if newDistance < distances[edgeVertexIndex]:
-                    distances[edgeVertexIndex] = newDistance
+                if vertecies[edgeVertexIndex].visited: continue
+                newDistance: float = vertecies[index].distance + edge.weight
+                if newDistance < vertecies[edgeVertexIndex].distance:
+                    vertecies[edgeVertexIndex].distance = newDistance
                     
                     vertexIndex: int = self.GetListIndexFromVertexIndexInList(priorityQueue, edgeVertexIndex)
                     if (vertexIndex != -1): # If we found it, remove it
@@ -28,8 +25,6 @@ class Dijkstra():
 
                     # Add it
                     priorityQueue.append((edgeVertexIndex, newDistance))
-        
-        return distances
 
     def GetListIndexFromVertexIndexInList(self, list: list, indexToSearchFor: int) -> int:
         for i in range(len(list)):
@@ -37,19 +32,6 @@ class Dijkstra():
                 return i
             
         return -1
-
-    def CreateVisitedList(self, length: int) -> list:
-        # Create list
-        visited: list = []
-
-        # Fill list
-        for i in range(length):
-            visited.append(False)
-
-        # Return list
-        return visited
-    
-    def CreateDistanceList(self, length: int) -> list:
         # Create list
         distances: list = []
 

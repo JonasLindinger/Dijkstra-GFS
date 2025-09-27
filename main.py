@@ -40,10 +40,15 @@ class FirstDemo(Scene):
         self.DisplayGraph(graph)
 
         dijkstra: Dijkstra = Dijkstra()
-        distances: list = dijkstra.Run(
-            graph.vertices,
-            0,
-        )
+        distances: list = dijkstra.RunLazy(graph.vertices, 0)
+
+        result: str = ""
+        i: int = 0
+        for currentVertex in graph.vertices:
+            result += currentVertex.name + " -> " + str(currentVertex.distance) + ", "
+            i += 1
+        text: Text = Text(result, font_size=20).move_to([0, -3, 0])
+        self.play(Create(text))
 
         return
 
