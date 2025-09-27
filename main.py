@@ -32,6 +32,64 @@ class DijkstraIntro(Scene):
         self.play(contentGroup)
         self.wait(5)
 
+class CodeExample(Scene):
+    def construct(self):
+        code = '''class Dijkstra():
+    def __init__(self):
+        pass
+
+    def RunLazy(self, vertecies: list, startingVertexIndex: int):
+        vertecies[startingVertexIndex].distance = 0
+        priorityQueue: list = []
+        priorityQueue.append((startingVertexIndex, 0)) # index, distance
+        while len(priorityQueue) != 0:
+            item = self.GetTheNearestItem(priorityQueue)
+            priorityQueue.remove(item)
+            index: int = item[0]
+            # distance: float = item[1] <- no need for it
+            vertecies[index].visited = True
+            for edge in vertecies[index].outgoingEdges:
+                edgeVertexIndex: int = vertecies.index(edge.to)
+                if vertecies[edgeVertexIndex].visited: continue
+                newDistance: float = vertecies[index].distance + edge.weight
+                if newDistance < vertecies[edgeVertexIndex].distance:
+                    vertecies[edgeVertexIndex].distance = newDistance
+                    
+                    vertexIndex: int = self.GetListIndexFromVertexIndexInList(priorityQueue, edgeVertexIndex)
+                    if (vertexIndex != -1): # If we found it, remove it
+                        priorityQueue.pop(vertexIndex)
+
+                    # Add it
+                    priorityQueue.append((edgeVertexIndex, newDistance))
+
+    def GetListIndexFromVertexIndexInList(self, list: list, indexToSearchFor: int) -> int:
+        for i in range(len(list)):
+            if (list[i][0] == indexToSearchFor):
+                return i
+            
+        return -1
+    
+    def GetTheNearestItem(self, list: list):
+        nearestDistance: float = float('inf')
+        nearestItem = None
+
+        for item in list:
+            if item[1] < nearestDistance:
+                nearestDistance = item[1]
+                nearestItem = item
+
+        return nearestItem'''
+
+        rendered_code = Code(
+            code_string=code,
+            tab_width=6,
+            language="Python",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+
+        self.play(Write(rendered_code))
+        self.wait(2)
+
 class LazyDijkstra(Scene):
     def construct(self):
         # Get the graph to display
@@ -107,6 +165,7 @@ class LazyDijkstra(Scene):
             
         return -1
 
+    # (Un)Highlighting vertices and edges
     def HighlightVertex(self, vertex: Vertex):
         circle: Circle = vertex.visual[0]
         text: Text = vertex.visual[1]
