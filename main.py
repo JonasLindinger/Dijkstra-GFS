@@ -69,6 +69,7 @@ class LazyDijkstra(Scene):
             for edge in vertecies[index].outgoingEdges:
                 edgeVertexIndex: int = vertecies.index(edge.to)
                 if vertecies[edgeVertexIndex].visited: continue
+                self.HighlightEdge(edge)
                 newDistance: float = vertecies[index].distance + edge.weight
                 if newDistance < vertecies[edgeVertexIndex].distance:
                     vertecies[edgeVertexIndex].distance = newDistance
@@ -85,6 +86,7 @@ class LazyDijkstra(Scene):
 
                     # visuals
                     self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
+                self.UnhighlightEdge(edge)
             self.UnhighlightVertex(vertecies[index])
 
     def GetTheNearestItem(self, list: list):
@@ -124,6 +126,16 @@ class LazyDijkstra(Scene):
         )
 
         self.play(animation)
+
+    def HighlightEdge(self, edge: Edge):
+        arrow: Circle = edge.visual[0]
+
+        self.play(arrow.animate.set_stroke(color=YELLOW))
+
+    def UnhighlightEdge(self, edge: Edge):
+        arrow: Circle = edge.visual[0]
+
+        self.play(arrow.animate.set_stroke(color=WHITE))
 
     # -- AI GENEREATED METHOD --
     def UpdatePriorityQueueVisuals(self, priorityQueue, vertecies, visuals,

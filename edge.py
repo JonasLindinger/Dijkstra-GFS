@@ -5,7 +5,7 @@ class Edge():
         self.start = start
         self.to = to
         self.weight = weight
-        self.visual = self.GetVisual(color)
+        self.visual: VGroup = self.GetVisual(color)
 
         # Add this edge as a connected Edge to the vertices
         start.outgoingEdges.append(self)
