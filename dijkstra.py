@@ -32,15 +32,6 @@ class Dijkstra():
                 return i
             
         return -1
-        # Create list
-        distances: list = []
-
-        # Fill list
-        for i in range(length):
-            distances.append(float("inf")) # float("inf") -> infinity
-
-        # Return list
-        return distances
     
     def GetTheNearestItem(self, list: list):
         nearestDistance: float = float('inf')

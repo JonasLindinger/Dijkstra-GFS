@@ -32,15 +32,14 @@ class DijkstraIntro(Scene):
         self.play(contentGroup)
         self.wait(5)
 
-class FirstDemo(Scene):
+class LazyDijkstra(Scene):
     def construct(self):
         # Get the graph to display
         graph: Graph = self.GetGraph([2, 0, 0])
 
         self.DisplayGraph(graph)
 
-        dijkstra: Dijkstra = Dijkstra()
-        distances: list = dijkstra.RunLazy(graph.vertices, 0)
+        self.RunLazy(graph.vertices, 0)
 
         result: str = ""
         i: int = 0
@@ -50,138 +49,50 @@ class FirstDemo(Scene):
         text: Text = Text(result, font_size=20).move_to([0, -3, 0])
         self.play(Create(text))
 
-        return
-
-        # Algorithm starting
-        startingVertex: Vertex = graph.vertices[0]
-        startingVertex.distance = 0 # We are here -> distance = 0
+    # Lazy Dijkstra
+    def RunLazy(self, vertecies: list, startingVertexIndex: int):
+        vertecies[startingVertexIndex].distance = 0
         priorityQueue: list = []
-        priorityQueue.append(startingVertex)
-
-        # Algorithm visualisation
-        vertexDisplays: list = []
-        xCoordinate: float = -5.5
-        startingHeight: float = 3
-        yPadding: float = 0.5
-        distancesText = Text("", font_size=20).move_to([0, -3, 0])
-        self.add(distancesText)
-        firstVertexText: Text = Text(startingVertex.name + " -> " + str(startingVertex.distance), font_size=30).move_to([xCoordinate, startingHeight, 0])
-        vertexDisplays.append((startingVertex, firstVertexText))
-
-        self.play(Write(firstVertexText))
-
-        # Algorithm
+        priorityQueue.append((startingVertexIndex, 0)) # index, distance
         while len(priorityQueue) != 0:
-            # Get the closest vertex
-            closestVertex: Vertex = self.GetClosestVertex(priorityQueue)
+            item = self.GetTheNearestItem(priorityQueue)
+            priorityQueue.remove(item)
+            index: int = item[0]
+            # distance: float = item[1] <- no need for it
+            vertecies[index].visited = True
+            for edge in vertecies[index].outgoingEdges:
+                edgeVertexIndex: int = vertecies.index(edge.to)
+                if vertecies[edgeVertexIndex].visited: continue
+                newDistance: float = vertecies[index].distance + edge.weight
+                if newDistance < vertecies[edgeVertexIndex].distance:
+                    vertecies[edgeVertexIndex].distance = newDistance
+                    
+                    vertexIndex: int = self.GetListIndexFromVertexIndexInList(priorityQueue, edgeVertexIndex)
+                    if (vertexIndex != -1): # If we found it, remove it
+                        priorityQueue.pop(vertexIndex)
 
-            # Get index and mark as visited
-            i: int = graph.vertices.index(closestVertex)
-            graph.vertices[i].visited = True
+                    # Add it
+                    priorityQueue.append((edgeVertexIndex, newDistance))
 
-            # Remove from queue
-            # visual
-            indexOfItemToPop: int = priorityQueue.index(closestVertex)
-            for kvp in vertexDisplays:
-                vertex: Vertex = kvp[0]
-                if (vertex == priorityQueue[indexOfItemToPop]):
-                    # Hide
-                    text: Text = kvp[1]
-                    self.play(Unwrite(text))
-                    vertexDisplays.pop(vertexDisplays.index(kvp)) # remove the visual from list
-                    break
-
-            # algorithm
-            priorityQueue.pop(indexOfItemToPop)
-
-            currentVertex: Vertex = graph.vertices[i]
-            for currentEdge in graph.vertices[i].connectedEdges:
-                edge: Edge = currentEdge
-                if (edge.to.visited): continue # Skip visited vertexes
-                newDistance: float = currentVertex.distance + edge.weight
-                if (newDistance < edge.to.distance): # Update the distance if we found a closer way
-                    edge.to.distance = newDistance
-                    priorityQueue.append(edge.to) # Append the new vertex
-
-                    # visual
-                    newText: Text = Text(edge.to.name + " -> " + str(edge.to.distance), font_size=30).move_to([xCoordinate, startingHeight - (yPadding * len(vertexDisplays)), 0])
-                    vertexDisplays.append((edge.to, newText))
-
-                    self.play(Write(newText)) 
-
-            # Remove the old distances text first
-            if text is not None:
-                self.remove(text)
-
-            # Create new distances text
-            distances: str = ""
-            for currentVertex in graph.vertices:
-                distances += currentVertex.name + " -> " + str(currentVertex.distance) + ", "
-            text: Text = Text(distances, font_size=20).move_to([0, -3, 0])
-            self.play(Create(text))
-
-                
-    def GetClosestVertex(self, vertices: list) -> Vertex:
-        nearestDistance: float = float('inf')
-        nearestVertex = None
-
-        for vertex in vertices:
-            if vertex.distance < nearestDistance:
-                nearestDistance = vertex.distance
-                nearestVertex = vertex
-
-        return nearestVertex
-
-    
-    def dump(self, graph):
-        # OLD
-        currentVertex: Vertex = graph.vertices[0]
-        currentVertex.distance = 0 # We are here -> distance = 0
-        previousVertex: Vertex = Vertex("None", [0, 0, 0], RED)
-
-        while (True):
-            # Check if we are finished
-            if (currentVertex == graph.vertices[len(graph.vertices) - 1]):
-                # We are finished because there is no other way to check.
-                break
-
-            # Highlight the first
-            currentCircle: Circle = graph.vertices[0].visual[0]
-            currentText: Text = graph.vertices[0].visual[1]
-            previousCircle: Circle = previousVertex.visual[0]
-            previousText: Text = previousVertex.visual[1]
-            self.play(
-                currentCircle.animate.set_fill(RED, opacity=0).set_stroke(YELLOW), 
-                currentText.animate.set_color(WHITE),
-                previousCircle.animate.set_fill(RED, opacity=0).set_stroke(RED), 
-                previousText.animate.set_color(RED),
-            )
-
-            closestVertex: Vertex = None
-            for connectedEdge in currentVertex.connectedEdges:
-                edge: Edge = connectedEdge
-                otherVertex: Vertex = None
-                if (edge.vertexA == currentVertex):
-                    # We come from vertexA so we want to use vertexA
-                    otherVertex = edge.vertexB
-                else:
-                    # We come from vertexB so we want to use vertexB
-                    otherVertex = edge.vertexA
-
-                # Update the vertexes distance if the new distance is less than the old distance
-                newDistance: float = currentVertex.distance + edge.weight
-                if (otherVertex.distance > newDistance):
-                    # Update the distance because we found a better way
-                    otherVertex.distance = newDistance
-
-                # Check and save the closest vertex
-                if (closestVertex == None or closestVertex.distance > otherVertex.distance):
-                    closestVertex = otherVertex
+    def GetListIndexFromVertexIndexInList(self, list: list, indexToSearchFor: int) -> int:
+        for i in range(len(list)):
+            if (list[i][0] == indexToSearchFor):
+                return i
             
-            # Update the newest Vertex for the next run
-            previousVertex = currentVertex
-            currentVertex = closestVertex
+        return -1
+    
+    def GetTheNearestItem(self, list: list):
+        nearestDistance: float = float('inf')
+        nearestItem = None
 
+        for item in list:
+            if item[1] < nearestDistance:
+                nearestDistance = item[1]
+                nearestItem = item
+
+        return nearestItem
+
+    # Creating and displaying the graph
     def DisplayGraph(self, graph: Graph):
         # Create animation list
         animations = []
