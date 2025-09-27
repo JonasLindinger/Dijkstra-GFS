@@ -51,14 +51,27 @@ class LazyDijkstra(Scene):
 
     # Lazy Dijkstra
     def RunLazy(self, vertecies: list, startingVertexIndex: int):
+        visuals: list = []
+        listStartingHeight: float = 3
+        listXPosition: float = -5.5
+        listItemPadding: float = 0.5
+
         vertecies[startingVertexIndex].distance = 0
         priorityQueue: list = []
         priorityQueue.append((startingVertexIndex, 0)) # index, distance
+
+        # visuals
+        self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
+
         while len(priorityQueue) != 0:
             item = self.GetTheNearestItem(priorityQueue)
             priorityQueue.remove(item)
             index: int = item[0]
             # distance: float = item[1] <- no need for it
+
+            # visuals
+            self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
+
             vertecies[index].visited = True
             for edge in vertecies[index].outgoingEdges:
                 edgeVertexIndex: int = vertecies.index(edge.to)
@@ -67,20 +80,19 @@ class LazyDijkstra(Scene):
                 if newDistance < vertecies[edgeVertexIndex].distance:
                     vertecies[edgeVertexIndex].distance = newDistance
                     
-                    vertexIndex: int = self.GetListIndexFromVertexIndexInList(priorityQueue, edgeVertexIndex)
+                    vertexIndex: int = self.GetIndexFromFirstItemOfAToupleOfAList(priorityQueue, edgeVertexIndex)
                     if (vertexIndex != -1): # If we found it, remove it
                         priorityQueue.pop(vertexIndex)
+
+                        # visuals
+                        self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
 
                     # Add it
                     priorityQueue.append((edgeVertexIndex, newDistance))
 
-    def GetListIndexFromVertexIndexInList(self, list: list, indexToSearchFor: int) -> int:
-        for i in range(len(list)):
-            if (list[i][0] == indexToSearchFor):
-                return i
-            
-        return -1
-    
+                    # visuals
+                    self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
+
     def GetTheNearestItem(self, list: list):
         nearestDistance: float = float('inf')
         nearestItem = None
@@ -91,6 +103,83 @@ class LazyDijkstra(Scene):
                 nearestItem = item
 
         return nearestItem
+
+    def GetIndexFromFirstItemOfAToupleOfAList(self, list: list, item):
+        for i in range(len(list)):
+            if (list[i][0] == item):
+                return i
+            
+        return -1
+
+    # -- AI GENEREATED METHOD --
+    def UpdatePriorityQueueVisuals(self, priorityQueue, vertecies, visuals,
+                                   listXPosition, listStartingHeight, listItemPadding):
+        # Sort the queue by distance (second item of tuple)
+        sortedQueue = sorted(priorityQueue, key=lambda item: item[1])
+
+        # Remove items that are not in the queue anymore
+        for vIndex, text in visuals.copy():
+            found = False
+            for item in sortedQueue:
+                if item[0] == vIndex:
+                    found = True
+                    break
+            if not found:
+                self.play(Unwrite(text))
+                visuals.remove((vIndex, text))
+
+        # Step 1: prepare animations for shifting
+        animations = []
+
+        # Step 2: check for new items
+        for item in sortedQueue:
+            index = item[0]
+            distance = item[1]
+
+            alreadyThere = False
+            for vIndex, text in visuals:
+                if vIndex == index:
+                    alreadyThere = True
+                    break
+
+            # If it's a new item
+            if not alreadyThere:
+                # Find where it should go
+                order = sortedQueue.index(item) + 1
+                newPos = [listXPosition,
+                          listStartingHeight - (listItemPadding * order),
+                          0]
+
+                # Special case: if it's at the top and something is already there
+                if order == 1 and len(visuals) > 0:
+                    shiftAnimations = []
+                    for vIndex, text in visuals:
+                        oldX, oldY, oldZ = text.get_center()
+                        newY = oldY - listItemPadding
+                        shiftAnimations.append(text.animate.move_to([oldX, newY, oldZ]))
+                    if len(shiftAnimations) > 0:
+                        self.play(*shiftAnimations)
+
+                # Now write the new item
+                newText = Text(
+                    vertecies[index].name + " -> " + str(vertecies[index].distance),
+                    font_size=30
+                ).move_to(newPos)
+                visuals.append((index, newText))
+                self.play(Write(newText))
+
+        # Step 3: Reorder everything according to sorted queue
+        animations = []
+        for order, item in enumerate(sortedQueue, start=1):
+            index = item[0]
+            for vIndex, text in visuals:
+                if vIndex == index:
+                    newPos = [listXPosition,
+                              listStartingHeight - (listItemPadding * order),
+                              0]
+                    animations.append(text.animate.move_to(newPos))
+        if len(animations) > 0:
+            self.play(*animations)
 
     # Creating and displaying the graph
     def DisplayGraph(self, graph: Graph):
