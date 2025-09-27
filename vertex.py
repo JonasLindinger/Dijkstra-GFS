@@ -2,12 +2,12 @@ from manim import *
 import math as math
 
 class Vertex():
-    def __init__(self, name, position, color):
-        self.name = name
+    def __init__(self, name: str, position, color):
+        self.name: str = name
         self.position = position
-        self.visual = self.GetVisual(color)
+        self.visual: Group = self.GetVisual(color)
         self.distance = float("inf")
-        self.visited = False
+        self.visited: bool = False
         self.outgoingEdges: list = []
 
     def GetVisual(self, color) -> Group:

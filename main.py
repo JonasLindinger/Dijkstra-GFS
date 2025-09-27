@@ -41,14 +41,6 @@ class LazyDijkstra(Scene):
 
         self.RunLazy(graph.vertices, 0)
 
-        result: str = ""
-        i: int = 0
-        for currentVertex in graph.vertices:
-            result += currentVertex.name + " -> " + str(currentVertex.distance) + ", "
-            i += 1
-        text: Text = Text(result, font_size=20).move_to([0, -3, 0])
-        self.play(Create(text))
-
     # Lazy Dijkstra
     def RunLazy(self, vertecies: list, startingVertexIndex: int):
         visuals: list = []
@@ -73,6 +65,7 @@ class LazyDijkstra(Scene):
             self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
 
             vertecies[index].visited = True
+            self.HighlightVertex(vertecies[index])
             for edge in vertecies[index].outgoingEdges:
                 edgeVertexIndex: int = vertecies.index(edge.to)
                 if vertecies[edgeVertexIndex].visited: continue
@@ -92,6 +85,7 @@ class LazyDijkstra(Scene):
 
                     # visuals
                     self.UpdatePriorityQueueVisuals(priorityQueue, vertecies, visuals, listXPosition, listStartingHeight, listItemPadding)
+            self.UnhighlightVertex(vertecies[index])
 
     def GetTheNearestItem(self, list: list):
         nearestDistance: float = float('inf')
@@ -110,6 +104,26 @@ class LazyDijkstra(Scene):
                 return i
             
         return -1
+
+    def HighlightVertex(self, vertex: Vertex):
+        circle: Circle = vertex.visual[0]
+        text: Text = vertex.visual[1]
+        animation: AnimationGroup = AnimationGroup(
+            circle.animate.set_stroke(color=YELLOW),
+            text.animate.set_color(color=WHITE)
+        )
+
+        self.play(animation)
+    
+    def UnhighlightVertex(self, vertex: Vertex):
+        circle: Circle = vertex.visual[0]
+        text: Text = vertex.visual[1]
+        animation: AnimationGroup = AnimationGroup(
+            circle.animate.set_stroke(color=RED),
+            text.animate.set_color(color=RED)
+        )
+
+        self.play(animation)
 
     # -- AI GENEREATED METHOD --
     def UpdatePriorityQueueVisuals(self, priorityQueue, vertecies, visuals,
