@@ -189,12 +189,12 @@ class LazyDijkstra(Scene):
     def HighlightEdge(self, edge: Edge):
         arrow: Circle = edge.visual[0]
 
-        self.play(arrow.animate.set_stroke(color=YELLOW))
+        self.play(arrow.animate.set_stroke(color=YELLOW).set_fill(color=YELLOW))
 
     def UnhighlightEdge(self, edge: Edge):
         arrow: Circle = edge.visual[0]
 
-        self.play(arrow.animate.set_stroke(color=WHITE))
+        self.play(arrow.animate.set_stroke(color=WHITE).set_fill(color=WHITE))
 
     # -- AI GENEREATED METHOD --
     def UpdatePriorityQueueVisuals(self, priorityQueue, vertecies, visuals,
