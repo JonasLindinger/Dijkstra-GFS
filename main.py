@@ -352,3 +352,54 @@ class LazyDijkstra(Scene):
             worldPosition[2] + localPosition[2],
         ]
         return newWorldPosition
+
+# -- AI Generated class --
+class UMLClassBox(VGroup):
+    def __init__(self, class_name, attributes=None, methods=None, **kwargs):
+        super().__init__(**kwargs)
+
+        attributes = attributes or []
+        methods = methods or []
+
+        # Text sections
+        name_text = Text(class_name, weight=BOLD).scale(0.5)
+        attr_text = VGroup(*[Text(a).scale(0.4) for a in attributes]).arrange(DOWN, aligned_edge=LEFT)
+        meth_text = VGroup(*[Text(m).scale(0.4) for m in methods]).arrange(DOWN, aligned_edge=LEFT)
+
+        # Rectangles
+        name_box = SurroundingRectangle(name_text, buff=0.2)
+        attr_box = SurroundingRectangle(attr_text, buff=0.2) if attr_text else Rectangle(width=name_box.width, height=0.3)
+        meth_box = SurroundingRectangle(meth_text, buff=0.2) if meth_text else Rectangle(width=name_box.width, height=0.3)
+
+        # Align widths
+        max_width = max(name_box.width, attr_box.width, meth_box.width)
+        for box in [name_box, attr_box, meth_box]:
+            box.stretch_to_fit_width(max_width)
+
+        # Stack vertically
+        boxes = VGroup(name_box, attr_box, meth_box).arrange(DOWN, buff=0)
+        texts = VGroup(name_text, attr_text, meth_text).arrange(DOWN, buff=0.4, aligned_edge=LEFT)
+
+        self.add(boxes, texts)
+        self.boxes = boxes
+        self.texts = texts
+
+# -- AI Generated class --
+class UMLDiagram(Scene):
+    def construct(self):
+        # Create classes
+        base_class = UMLClassBox("Animal", attributes=["+ name: str", "+ age: int"], methods=["+ eat()", "+ sleep()"])
+        derived_class = UMLClassBox("Dog", attributes=["+ breed: str"], methods=["+ bark()"])
+
+        # Position them
+        base_class.to_edge(UP)
+        derived_class.next_to(base_class, DOWN, buff=2)
+
+        # Inheritance arrow
+        arrow = Arrow(start=derived_class.get_top(), end=base_class.get_bottom(), buff=0.1)
+
+        # Animate
+        self.play(FadeIn(base_class))
+        self.play(FadeIn(derived_class))
+        self.play(Create(arrow))
+        self.wait(2)
