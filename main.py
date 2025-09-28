@@ -10,6 +10,7 @@ class GFS(Scene):
         # Run both parts in sequence
         self.Intro()
         self.basics()
+        self.shortestPathProblem()
 
     def Intro(self):
         # Topic title
@@ -36,23 +37,24 @@ class GFS(Scene):
 
     def basics(self):
         # Animate menu removal and title change
-        newTitle = Text("Grundlagen").scale(1.5).scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT)
-        newUnderline = Underline(newTitle, buff=0)
+        self.basicsText = Text("Grundlagen").scale(1.5).scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT)
+        self.basicsTextUnderline = Underline(self.basicsText, buff=0)
 
         self.play(
             Unwrite(self.first, run_time=0.75), Unwrite(self.second, run_time=0.75),
             Unwrite(self.third, run_time=0.75), Unwrite(self.fourth, run_time=0.75), Unwrite(self.fifth, run_time=0.75),
-            Transform(self.title, newTitle, run_time=1),
-            Transform(self.underline, newUnderline, run_time=1),
+            Transform(self.title, self.basicsText, run_time=1),
+            Transform(self.underline, self.basicsTextUnderline, run_time=1),
         )
 
         self.wait(1)
 
         graph: Graph = self.GetGraphA([0, 0, 0], False)
 
-        self.DisplayGraph(graph, False)
+        self.graphGroup: Group = self.DisplayGraph(graph, False)
 
         vertexText: Text = Text("Vertex (sg), Vertices (pl)", color=RED).scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
+        self.graphGroup.add(vertexText)
         self.animations.clear()
         
         for vertex in graph.vertices:
@@ -66,6 +68,7 @@ class GFS(Scene):
         self.play(*self.animations)
 
         edgeText: Text = Text("Edge (sg), Edges (pl)", color=GREEN).scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
+        self.graphGroup.add(edgeText)
         self.animations.clear()
         
         for edge in graph.edges:
@@ -80,6 +83,23 @@ class GFS(Scene):
         self.animations.clear()
 
         self.wait(2)
+
+    def shortestPathProblem(self):
+        # Animate transition
+        self.sppText = Text("Das Problem des kürzesten Weges.").scale(1.5).scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT)
+        self.sppTextUnderline = Underline(self.sppText, buff=0)
+
+        dot: Dot = Dot([0, 0, 0], 0, color=ORANGE)
+
+        self.play(
+            ReplacementTransform(self.graphGroup, dot),
+            ReplacementTransform(self.basicsText, self.sppText),
+            ReplacementTransform(self.basicsTextUnderline, self.sppTextUnderline),
+        )
+
+        self.wait(1)
+
+        // Todo: fix text overlap
 
 
     def GetGraphA(self, position, withDistance: bool) -> Graph:
@@ -116,7 +136,9 @@ class GFS(Scene):
         return newWorldPosition
 
     # Creating and displaying the graph
-    def DisplayGraph(self, graph: Graph, showDistances: bool):
+    def DisplayGraph(self, graph: Graph, showDistances: bool) -> Group:
+        graphGroup: Group = Group()
+
         # Create animation list
         animations = []
 
@@ -127,20 +149,25 @@ class GFS(Scene):
             text = visual[1]    # Text
             animations.append(Create(circle))
             animations.append(Write(text))
+            graphGroup.add(visual)
 
         if showDistances:
             for vertex in graph.vertices:
                 distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
                 vertex.visual.add(distanceText)
                 self.add(distanceText)
+                graphGroup.add(distanceText)
 
         # Add every edge to the animations
         for edge in graph.edges:
             arrow = edge.visual
             animations.append(Write(arrow))
+            graphGroup.add(arrow)
 
         # Display
         self.play(*animations)
+
+        return graphGroup
 
 class CodeExample(Scene):
     def construct(self):
