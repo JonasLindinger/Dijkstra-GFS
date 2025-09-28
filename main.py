@@ -3,34 +3,160 @@ from vertex import *
 from edge import *
 from graph import *
 from dijkstra import *
+import random
 
-class DijkstraIntro(Scene):
+class GFS(Scene):
     def construct(self):
-        # Show topic
-        title: Text = Text("Dijkstra Algorithmus").scale(1.5)
-        self.play(Write(title, run_time=2))
-        
-        titleAnimation: AnimationGroup = AnimationGroup(
-            title.animate
-            .scale(0.7)
-            .move_to([-3.2, 3, 0]),
+        # Run both parts in sequence
+        self.Intro()
+        self.basics()
+
+    def Intro(self):
+        # Topic title
+        self.title = Text("Dijkstra Algorithmus").scale(1.5)
+        self.play(Write(self.title, run_time=2))
+        self.wait(1)
+
+        self.play(self.title.animate.scale(0.7).move_to([-3.2, 3, 0]))
+        self.underline = Underline(self.title, buff=0)
+        self.play(Write(self.underline, run_time=0.5))
+
+        # Menu
+        self.first  = Text("1. Grundlagen").scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
+        self.second = Text("2. Das Problem des kürzesten Weges.").scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
+        self.third  = Text("3. Was ist der Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 1, 0], aligned_edge=LEFT)
+        self.fourth = Text("4. Wo wird der Dijkstra Algorithmus genutzt?").scale(.5).move_to([-6.5, 0.5, 0], aligned_edge=LEFT)
+        self.fifth  = Text("5. Wie funktioniert der Lazy Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 0, 0], aligned_edge=LEFT)
+
+        self.play(
+            Write(self.first, run_time=1), Write(self.second, run_time=1),
+            Write(self.third, run_time=1), Write(self.fourth, run_time=1), Write(self.fifth, run_time=1)
+        )
+        self.wait(2)
+
+    def basics(self):
+        # Animate menu removal and title change
+        newTitle = Text("Grundlagen").scale(1.5).scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT)
+        newUnderline = Underline(newTitle, buff=0)
+
+        self.play(
+            Unwrite(self.first, run_time=0.75), Unwrite(self.second, run_time=0.75),
+            Unwrite(self.third, run_time=0.75), Unwrite(self.fourth, run_time=0.75), Unwrite(self.fifth, run_time=0.75),
+            Transform(self.title, newTitle, run_time=1),
+            Transform(self.underline, newUnderline, run_time=1),
         )
 
-        self.play(titleAnimation)
+        self.wait(1)
 
-        underline: Underline = Underline(title, buff=0)
+        graph: Graph = self.GetGraphA([-1, 0, 0], False)
 
-        self.play(Write(underline, run_time=.5))
+        self.DisplayGraph(graph, False)
 
-        # Show content
-        first: Text = Text("1. Was macht der Dijkstra Algorithmus?").scale(.5).move_to([-3.2, 2, 0])
+        # -- AI Generated content --
+        vertexA_visual: Circle = graph.vertices[1].visual[0]
+        edgeAToC_visual: Arrow = graph.edges[4].visual[0]
 
-        contentGroup: AnimationGroup = AnimationGroup(
-            Write(first, run_time=1),
+        # Vertex label
+        vertexName = Text("Vertex / Punkte", font_size=18)
+        vertexName.next_to(vertexA_visual, RIGHT, buff=0.3).shift(UP * 0.5)
+        vertexNameUnderline = Underline(vertexName, buff=0.05)
+        vertexNameUnderline.move_to(vertexName.get_bottom() + DOWN*0.05)
+
+        # Edge label
+        edgeName = Text("Edge / Verbindung", font_size=18)
+        edgeName.next_to(edgeAToC_visual, RIGHT, buff=0.3).shift(UP * 0.5)
+        edgeNameUnderline = Underline(edgeName, buff=0.05)
+        edgeNameUnderline.move_to(edgeName.get_bottom() + DOWN*0.05)
+
+        # Line from vertex to underline
+        direction_to_label = vertexName.get_left() - vertexA_visual.get_center()
+        vertex_edge_point = vertexA_visual.get_boundary_point(direction_to_label)
+        line_to_vertex = Line(
+            start=vertex_edge_point, 
+            end=vertexNameUnderline.get_left()
+        )
+        # Line from edge center to underline
+        line_to_edge = Line(
+            start=edgeAToC_visual.get_center(), 
+            end=edgeNameUnderline.get_left()
         )
 
-        self.play(contentGroup)
-        self.wait(5)
+        # Play animations
+        self.play(
+            Write(vertexName),
+            Write(vertexNameUnderline),
+            Write(line_to_vertex)
+        )
+        self.play(
+            Write(edgeName),
+            Write(edgeNameUnderline),
+            Write(line_to_edge)
+        )
+
+        # -- NOT AI Generated content --
+
+        self.wait(2)
+
+
+    def GetGraphA(self, position, withDistance: bool) -> Graph:
+        # Create all vertices
+        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-4, 0, 0]), WHITE, withDistance)
+        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-2, 2, 0]), WHITE, withDistance)
+        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-2, -2, 0]), WHITE, withDistance)
+        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), WHITE, withDistance)
+        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), WHITE, withDistance)
+
+        # Create all edges
+        startToA: Edge = Edge(vStart, vA, 4, color=LIGHT_GRAY)
+        startToB: Edge = Edge(vStart, vB, 1, color=LIGHT_GRAY)
+        bToA: Edge = Edge(vB, vA, 2, color=LIGHT_GRAY)
+        bToC: Edge = Edge(vB, vC, 5, color=LIGHT_GRAY)
+        aToC: Edge = Edge(vA, vC, 1, color=LIGHT_GRAY)
+        cToTarget: Edge = Edge(vC, vTarget, 3, color=LIGHT_GRAY)
+
+        # Create the array
+        vertices: list = [vStart, vA, vB, vC, vTarget]
+        edges: list = [startToA, startToB, bToA, bToC, aToC, cToTarget]
+
+        # Create the graph
+        graph: Graph = Graph(vertices, edges)
+
+        return graph
+    
+    def LocalToWorldPosition(self, worldPosition: list, localPosition: list) -> list:
+        newWorldPosition: list = [
+            worldPosition[0] + localPosition[0],
+            worldPosition[1] + localPosition[1],
+            worldPosition[2] + localPosition[2],
+        ]
+        return newWorldPosition
+
+    # Creating and displaying the graph
+    def DisplayGraph(self, graph: Graph, showDistances: bool):
+        # Create animation list
+        animations = []
+
+        # Add every vertex to the animations
+        for vertex in graph.vertices:
+            visual = vertex.visual
+            circle = visual[0]  # Circle
+            text = visual[1]    # Text
+            animations.append(Create(circle))
+            animations.append(Write(text))
+
+        if showDistances:
+            for vertex in graph.vertices:
+                distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
+                vertex.visual.add(distanceText)
+                self.add(distanceText)
+
+        # Add every edge to the animations
+        for edge in graph.edges:
+            arrow = edge.visual
+            animations.append(Write(arrow))
+
+        # Display
+        self.play(*animations)
 
 class CodeExample(Scene):
     def construct(self):
