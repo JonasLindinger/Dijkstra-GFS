@@ -48,52 +48,36 @@ class GFS(Scene):
 
         self.wait(1)
 
-        graph: Graph = self.GetGraphA([-1, 0, 0], False)
+        graph: Graph = self.GetGraphA([0, 0, 0], False)
 
         self.DisplayGraph(graph, False)
 
-        # -- AI Generated content --
-        vertexA_visual: Circle = graph.vertices[1].visual[0]
-        edgeAToC_visual: Arrow = graph.edges[4].visual[0]
+        vertexText: Text = Text("Vertex (sg), Vertices (pl)", color=RED).scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
+        self.animations.clear()
+        
+        for vertex in graph.vertices:
+            circle: Circle = vertex.visual[0]
+            name: Text = vertex.visual[1]
+            self.animations.append(circle.animate.set_color(RED))
+            self.animations.append(name.animate.set_color(RED))
+        
+        self.animations.append(Write(vertexText))
 
-        # Vertex label
-        vertexName = Text("Vertex / Punkte", font_size=18)
-        vertexName.next_to(vertexA_visual, RIGHT, buff=0.3).shift(UP * 0.5)
-        vertexNameUnderline = Underline(vertexName, buff=0.05)
-        vertexNameUnderline.move_to(vertexName.get_bottom() + DOWN*0.05)
+        self.play(*self.animations)
 
-        # Edge label
-        edgeName = Text("Edge / Verbindung", font_size=18)
-        edgeName.next_to(edgeAToC_visual, RIGHT, buff=0.3).shift(UP * 0.5)
-        edgeNameUnderline = Underline(edgeName, buff=0.05)
-        edgeNameUnderline.move_to(edgeName.get_bottom() + DOWN*0.05)
+        edgeText: Text = Text("Edge (sg), Edges (pl)", color=GREEN).scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
+        self.animations.clear()
+        
+        for edge in graph.edges:
+            arrow: Arrow = edge.visual[0]
+            self.animations.append(arrow.animate.set_fill(GREEN))
+            self.animations.append(arrow.animate.set_color(GREEN))
 
-        # Line from vertex to underline
-        direction_to_label = vertexName.get_left() - vertexA_visual.get_center()
-        vertex_edge_point = vertexA_visual.get_boundary_point(direction_to_label)
-        line_to_vertex = Line(
-            start=vertex_edge_point, 
-            end=vertexNameUnderline.get_left()
-        )
-        # Line from edge center to underline
-        line_to_edge = Line(
-            start=edgeAToC_visual.get_center(), 
-            end=edgeNameUnderline.get_left()
-        )
+        self.animations.append(Write(edgeText))
 
-        # Play animations
-        self.play(
-            Write(vertexName),
-            Write(vertexNameUnderline),
-            Write(line_to_vertex)
-        )
-        self.play(
-            Write(edgeName),
-            Write(edgeNameUnderline),
-            Write(line_to_edge)
-        )
-
-        # -- NOT AI Generated content --
+        self.play(*self.animations)
+        
+        self.animations.clear()
 
         self.wait(2)
 
