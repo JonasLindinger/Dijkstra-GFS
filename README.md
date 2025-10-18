@@ -1,4 +1,5 @@
-<!-- 🤖 AI-GENERATED README -->
+> 🤖 **AI-Generated README**
+
 # 🧭 Dijkstra Algorithm Visualization – GFS Project
 
 A **visual deep dive** into one of computer science’s most famous algorithms — **Dijkstra’s Shortest Path Algorithm** — brought to life with **Manim CE (Community Edition)**.  
@@ -84,5 +85,6 @@ Jonas Lindinger
 ---
 
 Would you like me to make it include a **“comparison table with time complexity and memory usage”** for the two Dijkstra variants too? That could make it look even more professional for a GFS presentation.
+
 
 
