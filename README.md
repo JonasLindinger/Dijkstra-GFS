@@ -32,7 +32,6 @@ It’s not just theory — it’s a **fully animated explanation** powered by Py
 
 - 🐍 **Python 3**
 - 🎨 **[Manim CE](https://docs.manim.community/)** – mathematical animation engine
-- ⚙️ **NetworkX** (optional, for graph creation)
 - 💡 **Custom Visualization Utilities** (highlighting paths, weights, and queue updates)
 
 ---
@@ -57,9 +56,8 @@ manim -pql main.py DijkstraLazyScene
 # or
 manim -pql main.py DijkstraEagerScene
 
-💡 Tip: Use -pqh for high-quality output!
-
 ```
+💡 Tip: Use -pqh for high-quality output!
 
 🧠 Concept Behind the Visualization
 
@@ -75,10 +73,6 @@ How the shortest path "emerges" step by step
 
 Each node and edge dynamically changes color to reflect real-time algorithmic updates — helping you see how Dijkstra "thinks" in motion.
 
-📸 Preview (optional)
-
-(Add a GIF or screenshot of your rendered scene here)
-
 
 🧾 License
 
@@ -93,7 +87,7 @@ Jonas Lindinger
 
 ⭐ If you found this project helpful or inspiring, consider leaving a star on GitHub!
 
-
 ---
 
 Would you like me to make it include a **“comparison table with time complexity and memory usage”** for the two Dijkstra variants too? That could make it look even more professional for a GFS presentation.
+
