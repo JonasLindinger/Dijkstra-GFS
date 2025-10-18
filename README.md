@@ -73,12 +73,6 @@ How the shortest path "emerges" step by step
 
 Each node and edge dynamically changes color to reflect real-time algorithmic updates — helping you see how Dijkstra "thinks" in motion.
 
-
-🧾 License
-
-This project is released under the MIT License.
-Feel free to learn from it, remix it, or use it for your own GFS!
-
 👤 Author
 
 Jonas Lindinger
@@ -90,4 +84,5 @@ Jonas Lindinger
 ---
 
 Would you like me to make it include a **“comparison table with time complexity and memory usage”** for the two Dijkstra variants too? That could make it look even more professional for a GFS presentation.
+
 
