@@ -73,9 +73,17 @@ class GFS(Scene):
         self.wait(0.5)
         self.play(Write(award), run_time=1)
 
+        hidePersonalInfo: AnimationGroup = AnimationGroup(
+            FadeOut(img, run_time=1),
+            Unwrite(name, run_time=1),
+            Unwrite(country, run_time=1),
+            Unwrite(award, run_time=1),
+        )
+
         self.wait(1)
+        self.play(hidePersonalInfo, run_time=1)
         
-        demo_graph = self.GetGraphA([2, -1, 0], False)
+        demo_graph = self.GetGraphA([0, 0, 0], False)
         demo_graph.write(self, False)
         self.wait(1)
         demo_graph.highlight_solution(self)
