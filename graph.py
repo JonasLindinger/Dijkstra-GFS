@@ -61,12 +61,12 @@ class Graph():
 
         for i in range(len(path)):
             vertex: Vertex = path[i]
-            self.HighlightVertex(scene, vertex)
+            self.HighlightVertex(scene, vertex, 0.1)
 
             if i < len(path) - 1:
                 nextVertex: Vertex = path[i + 1]
                 edge: Edge = self.GetEdge(vertex, nextVertex)
-                self.HighlightEdge(scene, edge)
+                self.HighlightEdge(scene, edge, 0.1)
 
     def GetEdge(self, start: Vertex, to: Vertex) -> Edge:
         for edge in start.outgoingEdges:
@@ -76,7 +76,7 @@ class Graph():
         return None
 
     # (Un)Highlighting vertices and edges
-    def HighlightVertex(self, scene: Scene, vertex: Vertex):
+    def HighlightVertex(self, scene: Scene, vertex: Vertex, run_time: float):
         circle: Circle = vertex.visual[0]
         text: Text = vertex.visual[1]
         animation: AnimationGroup = AnimationGroup(
@@ -84,9 +84,9 @@ class Graph():
             text.animate.set_color(color=WHITE)
         )
 
-        scene.play(animation)
+        scene.play(animation, run_time=run_time)
     
-    def UnhighlightVertex(self, scene: Scene, vertex: Vertex):
+    def UnhighlightVertex(self, scene: Scene, vertex: Vertex, run_time: float):
         circle: Circle = vertex.visual[0]
         text: Text = vertex.visual[1]
         animation: AnimationGroup = AnimationGroup(
@@ -94,17 +94,17 @@ class Graph():
             text.animate.set_color(color=WHITE)
         )
 
-        scene.play(animation)
+        scene.play(animation, run_time=run_time)
 
-    def HighlightEdge(self, scene: Scene, edge: Edge):
+    def HighlightEdge(self, scene: Scene, edge: Edge, run_time: float):
         arrow: Circle = edge.visual[0]
 
-        scene.play(arrow.animate.set_stroke(color=YELLOW).set_fill(color=YELLOW))
+        scene.play(arrow.animate.set_stroke(color=YELLOW).set_fill(color=YELLOW), run_time=run_time)
 
-    def UnhighlightEdge(self, scene: Scene, edge: Edge):
+    def UnhighlightEdge(self, scene: Scene, edge: Edge, run_time: float):
         arrow: Circle = edge.visual[0]
 
-        scene.play(arrow.animate.set_stroke(color=LIGHT_GRAY).set_fill(color=LIGHT_GRAY))
+        scene.play(arrow.animate.set_stroke(color=LIGHT_GRAY).set_fill(color=LIGHT_GRAY), run_time=run_time)
 
     # Lazy Dijkstra
     def RunLazy(self, vertecies: list, startingVertexIndex: int):
