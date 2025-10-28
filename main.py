@@ -9,8 +9,9 @@ class GFS(Scene):
     def construct(self):
         # Run both parts in sequence
         self.Intro()
-        self.basics()
-        self.shortestPathProblem()
+        self.Info()
+        # self.basics()
+        # self.shortestPathProblem()
 
     def Intro(self):
         # Topic title
@@ -18,12 +19,12 @@ class GFS(Scene):
         self.play(Write(self.title, run_time=2))
         self.wait(1)
 
-        self.play(self.title.animate.scale(0.7).move_to([-3.2, 3, 0]))
+        self.play(self.title.animate.scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT))
         self.underline = Underline(self.title, buff=0)
         self.play(Write(self.underline, run_time=0.5))
 
-        # Menu
-        self.first  = Text("1. Grundlagen").scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
+        # Gliederung
+        self.first  = Text("1. Was ist der Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
         self.second = Text("2. Das Problem des kürzesten Weges.").scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
         self.third  = Text("3. Was ist der Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 1, 0], aligned_edge=LEFT)
         self.fourth = Text("4. Wo wird der Dijkstra Algorithmus genutzt?").scale(.5).move_to([-6.5, 0.5, 0], aligned_edge=LEFT)
@@ -34,6 +35,47 @@ class GFS(Scene):
             Write(self.third, run_time=1), Write(self.fourth, run_time=1), Write(self.fifth, run_time=1)
         )
         self.wait(2)
+
+    def Info(self):
+        new_text = Text("Was ist der Dijkstra Algorithmus?").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
+        new_underline = Underline(new_text, buff=0)
+
+        # Animate text morph
+        self.play(
+            Unwrite(self.title),
+            Unwrite(self.underline),
+            Unwrite(self.second),
+            Unwrite(self.third),
+            Unwrite(self.fourth),
+            Unwrite(self.fifth),
+            Transform(self.first, new_text),
+            Write(new_underline),
+            run_time=1
+        )
+
+        # Update references
+        self.first = new_text
+        self.underline = new_underline
+
+        # Show Edsger Dijkstra infos
+        img = ImageMobject("Edsger_Dijkstra.jpg") # https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/250px-Edsger_Wybe_Dijkstra.jpg
+        img.scale(2)
+        self.play(FadeIn(img))
+        self.play(img.animate.scale(0.6).to_edge(UL).shift(DOWN))
+
+        name = Text("Edsger W. Dijkstra (1930 - 2002)", font_size=24).next_to(img, RIGHT, buff=0.3).shift(UP)
+        country = Text("Niederländer", font_size=24).next_to(img, RIGHT, buff=0.3).shift(UP * 0.5)
+        award = Text("Turing Award (1972)", font_size=24).next_to(img, RIGHT, buff=0.3)
+    
+        self.play(Write(name), run_time=1)
+        self.wait(0.5)
+        self.play(Write(country), run_time=1)
+        self.wait(0.5)
+        self.play(Write(award), run_time=1)
+
+        self.wait(1)
+
+
 
     def basics(self):
         # Animate menu removal and title change
@@ -99,8 +141,7 @@ class GFS(Scene):
 
         self.wait(1)
 
-        // Todo: fix text overlap
-
+        # Todo: fix text overlap
 
     def GetGraphA(self, position, withDistance: bool) -> Graph:
         # Create all vertices
