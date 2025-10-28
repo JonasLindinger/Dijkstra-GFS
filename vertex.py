@@ -32,3 +32,17 @@ class Vertex():
         ).scale(0.5)
 
         return vertex
+    
+    def UpdateDistance(self, scene: Scene, newDistance: float, liveUpdateVisuals: bool):
+        self.distance = newDistance
+
+        if not liveUpdateVisuals: return
+
+        if len(self.visual) != 4: return
+        old_text: Text = self.visual[3]
+        new_text: Text = Text(str(newDistance), color=old_text[0].get_fill_color(), font_size=18).move_to(old_text)
+        scene.play(
+            Transform(old_text, new_text),
+            run_time=1
+        )
+        old_text = new_text

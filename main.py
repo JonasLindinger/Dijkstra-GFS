@@ -83,8 +83,8 @@ class GFS(Scene):
         self.wait(1)
         self.play(hidePersonalInfo, run_time=1)
         
-        demo_graph = self.GetGraphA([0, 0, 0], False)
-        demo_graph.write(self, False)
+        demo_graph = self.GetGraphA([0, 0, 0], True)
+        demo_graph.write(self, True)
         self.wait(1)
         demo_graph.highlight_solution(self)
 

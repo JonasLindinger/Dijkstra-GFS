@@ -5,7 +5,7 @@ class Graph():
     def __init__(self, vertices, edges):
         self.vertices: list = vertices
         self.edges: list = edges
-        self.group: Group = None
+        self.group: Group = self.generate_group(True)
         self.displayed_distances = False
 
     # Creating and displaying the graph
@@ -45,11 +45,35 @@ class Graph():
 
         return self.group
     
-    def solve(self, scene: Scene):
+    def generate_group(self, showDistances: bool) -> Group:
+        graphGroup: Group = Group()
+
+        # Add every vertex to the animations
+        for vertex in self.vertices:
+            visual = vertex.visual
+            graphGroup.add(visual)
+
+        if showDistances:
+            for vertex in self.vertices:
+                distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
+                vertex.visual.add(distanceText)
+                graphGroup.add(distanceText)
+
+        # Add every edge to the animations
+        for edge in self.edges:
+            arrow = edge.visual
+        graphGroup.add(arrow)
+
+        self.group = graphGroup
+        self.displayed_distances = showDistances
+
+        return self.group 
+
+    def solve(self, scene: Scene, liveUpdateVisuals: bool):
         if self.group == None:
             self.write(scene, True)
 
-        # TODO
+        self.RunLazy(scene, self.vertices, 0, liveUpdateVisuals)
 
     def highlight_solution(self, scene: Scene):
         if self.group == None:
@@ -57,7 +81,10 @@ class Graph():
 
         startingVertexIndex: int = 0 # We assume, that the starting vertex is the first item in the vertecies
         endingVertexIndex: int = len(self.vertices) - 1 # -1 makes it an index. We assume, that the ending vertex is at the end
-        path: list = self.GetShortestPath(self.vertices, startingVertexIndex, endingVertexIndex)
+        path: list = self.GetShortestPath(scene, self.vertices, startingVertexIndex, endingVertexIndex)
+
+        for vertex in self.vertices:
+            vertex.UpdateDistance(scene, vertex.distance, True)
 
         for i in range(len(path)):
             vertex: Vertex = path[i]
@@ -107,8 +134,8 @@ class Graph():
         scene.play(arrow.animate.set_stroke(color=LIGHT_GRAY).set_fill(color=LIGHT_GRAY), run_time=run_time)
 
     # Lazy Dijkstra
-    def RunLazy(self, vertecies: list, startingVertexIndex: int):
-        vertecies[startingVertexIndex].distance = 0
+    def RunLazy(self, scene: Scene, vertecies: list, startingVertexIndex: int, liveUpdateVisuals):
+        vertecies[startingVertexIndex].UpdateDistance(scene, 0, liveUpdateVisuals)
         priorityQueue: list = []
         priorityQueue.append((startingVertexIndex, 0)) # index, distance
 
@@ -125,7 +152,7 @@ class Graph():
                 newDistance: float = vertecies[index].distance + edge.weight
                 if newDistance < vertecies[edgeVertexIndex].distance:
                     vertecies[edgeVertexIndex].previousVertex = vertecies[index]
-                    vertecies[edgeVertexIndex].distance = newDistance
+                    vertecies[edgeVertexIndex].UpdateDistance(scene, newDistance, liveUpdateVisuals)
                     
                     vertexIndex: int = self.GetIndexFromFirstItemOfAToupleOfAList(priorityQueue, edgeVertexIndex)
                     if (vertexIndex != -1): # If we found it, remove it
@@ -135,8 +162,8 @@ class Graph():
                     priorityQueue.append((edgeVertexIndex, newDistance))
     
     # Returns a list from the starting node to the end node that contains every vertex which is part of the shortest path.
-    def GetShortestPath(self, vertecies: list, startingVertexIndex: int, endingVertexIndex) -> list:
-        self.RunLazy(self.vertices, startingVertexIndex)
+    def GetShortestPath(self, scene: Scene, vertecies: list, startingVertexIndex: int, endingVertexIndex) -> list:
+        self.RunLazy(scene, self.vertices, startingVertexIndex, False)
         path: list =  []
 
         # Check if we got to the ending vertex
@@ -153,8 +180,8 @@ class Graph():
         return path
     
     # Returns the shortest distance between two vertecies
-    def GetShortestDistance(self, vertecies: list, startingVertexIndex: int, endingVertexIndex) -> float:
-        self.RunLazy(self.vertices, startingVertexIndex)
+    def GetShortestDistance(self, scene: Scene, vertecies: list, startingVertexIndex: int, endingVertexIndex) -> float:
+        self.RunLazy(scene, self.vertices, startingVertexIndex, False)
         shortestDistance: float = float("inf")
 
         # Check if we got to the ending vertex
