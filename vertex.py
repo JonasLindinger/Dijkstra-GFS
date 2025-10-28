@@ -3,12 +3,17 @@ import math as math
 
 class Vertex():
     def __init__(self, name: str, position, color, withDistance: bool):
+        # Data
         self.name: str = name
         self.position = position
-        self.distance = float("inf")
-        self.visited: bool = False
         self.outgoingEdges: list = []
 
+        # Runtime data that the dijkstra changes
+        self.distance = float("inf")
+        self.visited: bool = False
+        self.previousVertex: Vertex = None
+
+        # Visual (can be ignored)
         self.visual: Group = self.GetVisual(color, withDistance)
 
     def GetVisual(self, color, withDistance: bool) -> Group:

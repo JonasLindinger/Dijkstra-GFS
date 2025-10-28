@@ -74,8 +74,11 @@ class GFS(Scene):
         self.play(Write(award), run_time=1)
 
         self.wait(1)
-
-
+        
+        demo_graph = self.GetGraphA([2, -1, 0], False)
+        demo_graph.write(self, False)
+        self.wait(1)
+        demo_graph.highlight_solution(self)
 
     def basics(self):
         # Animate menu removal and title change
@@ -143,13 +146,13 @@ class GFS(Scene):
 
         # Todo: fix text overlap
 
-    def GetGraphA(self, position, withDistance: bool) -> Graph:
+    def GetGraphA(self, position, showDistances: bool) -> Graph:
         # Create all vertices
-        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-4, 0, 0]), WHITE, withDistance)
-        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-2, 2, 0]), WHITE, withDistance)
-        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-2, -2, 0]), WHITE, withDistance)
-        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), WHITE, withDistance)
-        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), WHITE, withDistance)
+        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-4, 0, 0]), WHITE, showDistances)
+        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-2, 2, 0]), WHITE, showDistances)
+        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-2, -2, 0]), WHITE, showDistances)
+        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), WHITE, showDistances)
+        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), WHITE, showDistances)
 
         # Create all edges
         startToA: Edge = Edge(vStart, vA, 4, color=LIGHT_GRAY)
@@ -175,40 +178,6 @@ class GFS(Scene):
             worldPosition[2] + localPosition[2],
         ]
         return newWorldPosition
-
-    # Creating and displaying the graph
-    def DisplayGraph(self, graph: Graph, showDistances: bool) -> Group:
-        graphGroup: Group = Group()
-
-        # Create animation list
-        animations = []
-
-        # Add every vertex to the animations
-        for vertex in graph.vertices:
-            visual = vertex.visual
-            circle = visual[0]  # Circle
-            text = visual[1]    # Text
-            animations.append(Create(circle))
-            animations.append(Write(text))
-            graphGroup.add(visual)
-
-        if showDistances:
-            for vertex in graph.vertices:
-                distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
-                vertex.visual.add(distanceText)
-                self.add(distanceText)
-                graphGroup.add(distanceText)
-
-        # Add every edge to the animations
-        for edge in graph.edges:
-            arrow = edge.visual
-            animations.append(Write(arrow))
-            graphGroup.add(arrow)
-
-        # Display
-        self.play(*animations)
-
-        return graphGroup
 
 class CodeExample(Scene):
     def construct(self):
