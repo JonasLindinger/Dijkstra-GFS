@@ -10,6 +10,7 @@ class GFS(Scene):
         # Run both parts in sequence
         self.Intro()
         self.WhatIs()
+        self.Lazy()
         # self.basics()
         # self.shortestPathProblem()
 
@@ -40,22 +41,19 @@ class GFS(Scene):
         new_text = Text("Was ist der Dijkstra Algorithmus?").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
         new_underline = Underline(new_text, buff=0)
 
-        # Animate text morph
         self.play(
             Unwrite(self.title),
-            Unwrite(self.underline),
             Unwrite(self.second),
             Unwrite(self.third),
             Unwrite(self.fourth),
             Unwrite(self.fifth),
-            Transform(self.first, new_text),
-            Write(new_underline),
+            Transform(self.first, new_text),            
+            Transform(self.underline, new_underline),
             run_time=1
         )
 
-        # Update references
-        self.first = new_text
-        self.underline = new_underline
+        self.remove(new_text)
+        self.remove(new_underline)
 
         # Show Edsger Dijkstra infos
         img = ImageMobject("Edsger_Dijkstra.jpg") # https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Edsger_Wybe_Dijkstra.jpg/250px-Edsger_Wybe_Dijkstra.jpg
@@ -87,6 +85,21 @@ class GFS(Scene):
         demo_graph.write(self, True)
         self.wait(1)
         demo_graph.highlight_solution(self)
+
+    def Lazy(self):
+        new_text = Text("Lazy Dijkstra").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
+        new_underline = Underline(new_text, buff=0)
+
+        self.play(
+            Transform(self.first, new_text),
+            Transform(self.underline, new_underline),
+            run_time=1,
+        )
+
+        self.remove(new_text)        
+        self.remove(new_underline)
+
+        self.wait(1)
 
     def basics(self):
         # Animate menu removal and title change
