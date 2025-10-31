@@ -9,7 +9,7 @@ class GFS(Scene):
     def construct(self):
         # Run both parts in sequence
         self.Intro()
-        self.Info()
+        self.WhatIs()
         # self.basics()
         # self.shortestPathProblem()
 
@@ -36,7 +36,7 @@ class GFS(Scene):
         )
         self.wait(2)
 
-    def Info(self):
+    def WhatIs(self):
         new_text = Text("Was ist der Dijkstra Algorithmus?").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
         new_underline = Underline(new_text, buff=0)
 
