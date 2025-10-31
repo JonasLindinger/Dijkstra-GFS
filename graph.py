@@ -83,8 +83,18 @@ class Graph():
         endingVertexIndex: int = len(self.vertices) - 1 # -1 makes it an index. We assume, that the ending vertex is at the end
         path: list = self.GetShortestPath(scene, self.vertices, startingVertexIndex, endingVertexIndex)
 
+        animations: list = []
+        texts: list = []
+
         for vertex in self.vertices:
-            vertex.UpdateDistance(scene, vertex.distance, True)
+            transform, old_text, new_text = vertex.UpdateDistanceAndReturnAnimation(scene, vertex.distance, True)
+            animations.append(transform)
+            texts.append((old_text, new_text))
+
+        scene.play(*animations, run_time=1)
+
+        for old_text, new_text in texts:
+            old_text.become(new_text)
 
         for i in range(len(path)):
             vertex: Vertex = path[i]
