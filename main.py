@@ -81,10 +81,10 @@ class GFS(Scene):
         self.wait(1)
         self.play(hidePersonalInfo, run_time=1)
         
-        demo_graph = self.GetGraphA([0, 0, 0], True)
-        demo_graph.write(self, True)
+        self.demo_graph = self.GetGraphA([0, 0, 0], True)
+        self.demo_graph.write(self, True)
         self.wait(1)
-        demo_graph.highlight_solution(self)
+        self.demo_graph.highlight_solution(self)
 
     def Lazy(self):
         new_text = Text("Lazy Dijkstra").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
@@ -98,6 +98,8 @@ class GFS(Scene):
 
         self.remove(new_text)        
         self.remove(new_underline)
+
+        self.demo_graph.resetVisuals(self)
 
         self.wait(1)
 

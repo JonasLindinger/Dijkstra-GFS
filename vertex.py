@@ -57,9 +57,11 @@ class Vertex():
         new_text: Text = Text(str(newDistance), color=old_text[0].get_fill_color(), font_size=18).move_to(old_text)
 
         return (Transform(old_text, new_text), old_text, new_text)
-        # scene.play(
-        #     Transform(old_text, new_text),
-        #     run_time=1
-        # )
-        # old_text = new_text
-        
+    
+    def ResetDistance(self, scene: Scene) -> Transform:
+        self.distance = float("inf")
+
+        old_text: Text = self.visual[3]
+        new_text: Text = Text("∞", color=old_text[0].get_fill_color(), font_size=18).move_to(old_text)
+
+        return Transform(old_text, new_text)

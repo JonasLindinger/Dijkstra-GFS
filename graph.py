@@ -10,7 +10,7 @@ class Graph():
 
     # Creating and displaying the graph
     def write(self, scene: Scene, showDistances: bool) -> Group:
-        graphGroup: Group = Group()
+        graphGroup: Group = self.group
 
         # Create animation list
         animations = []
@@ -104,6 +104,24 @@ class Graph():
                 nextVertex: Vertex = path[i + 1]
                 edge: Edge = self.GetEdge(vertex, nextVertex)
                 self.HighlightEdge(scene, edge, 0.1)
+
+    def resetVisuals(self, scene: Scene):
+        animations: list = []
+
+        for vertex in self.vertices:
+            animations.append(vertex.ResetDistance(scene))
+
+        for vertex in self.vertices:
+            circle: Circle = vertex.visual[0]
+            text: Text = vertex.visual[1]
+            animations.append(circle.animate.set_stroke(color=WHITE))            
+            animations.append(text.animate.set_stroke(color=WHITE))
+
+        for edge in self.edges:
+            arrow: Circle = edge.visual[0]
+            animations.append(arrow.animate.set_stroke(color=WHITE).set_fill(color=WHITE))
+
+        scene.play(*animations, run_time=1)
 
     def GetEdge(self, start: Vertex, to: Vertex) -> Edge:
         for edge in start.outgoingEdges:
