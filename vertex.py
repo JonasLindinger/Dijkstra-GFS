@@ -47,7 +47,7 @@ class Vertex():
         )
         old_text = new_text
 
-    def UpdateDistanceAndReturnAnimation(self, scene: Scene, newDistance: float, liveUpdateVisuals: bool) -> (Transform, Text, Text):
+    def UpdateDistanceAndReturnAnimation(self, scene: Scene, newDistance: float, liveUpdateVisuals: bool) -> tuple[Transform, Text, Text]:
         self.distance = newDistance
 
         if not liveUpdateVisuals: return

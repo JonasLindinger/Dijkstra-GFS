@@ -1,5 +1,6 @@
 from main import *
 from manim import *
+from vertex import *
 
 class Graph():
     def __init__(self, vertices, edges):
