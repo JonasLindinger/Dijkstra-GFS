@@ -74,7 +74,7 @@ class Graph():
         path: list = self.GetShortestPath(scene, self.vertices, startingVertexIndex, endingVertexIndex)
 
         for vertex in self.vertices:
-            tracker: ValueTracker = vertex.UpdateDistanceAndReturnAnimation(vertex.distance, True)
+            tracker: ValueTracker = vertex.UpdateDistanceAndReturnAnimation(vertex.distance)
             tracker.set_value(vertex.distance)
 
         for i in range(len(path)):
@@ -92,7 +92,6 @@ class Graph():
         for vertex in self.vertices:
             tracker: ValueTracker = vertex.ResetDistance()
             tracker.set_value(vertex.distance)
-            #animations.append(tracker.set_value(vertex.distance))
 
         for vertex in self.vertices:
             circle: Circle = vertex.visual[0]
@@ -149,7 +148,7 @@ class Graph():
         # 1. Init variables 
 
         # 1.1. Set the starting vertex to a distance of 0 
-        vertecies[startingVertexIndex].UpdateDistance(scene, 0, liveUpdateVisuals)
+        vertecies[startingVertexIndex].UpdateDistance(0, liveUpdateVisuals)
 
         # 1.2.Create the priotity queue and append the startingVertex
         priorityQueue: list = []
@@ -191,7 +190,7 @@ class Graph():
                 if newDistance < vertecies[edgeVertexIndex].distance:
                     # 4.1. Update distance and mark the vertexes previousVertex to the current Vertex to later find the shortest path.
                     vertecies[edgeVertexIndex].previousVertex = vertecies[index]
-                    vertecies[edgeVertexIndex].UpdateDistance(scene, newDistance, liveUpdateVisuals)
+                    vertecies[edgeVertexIndex].UpdateDistance(newDistance, liveUpdateVisuals)
                     
                     # 4.2 When the vertex the edge points to, is in our list, remove it.
                     vertexIndex: int = self.GetIndexFromFirstItemOfAToupleOfAList(priorityQueue, edgeVertexIndex)

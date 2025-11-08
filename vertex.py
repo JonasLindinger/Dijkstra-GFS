@@ -48,7 +48,7 @@ class Vertex():
 
         return vertex
     
-    def UpdateDistance(self, scene: Scene, newDistance: float, liveUpdateVisuals: bool):
+    def UpdateDistance(self, newDistance: float, liveUpdateVisuals: bool):
         self.distance = newDistance
 
         if not liveUpdateVisuals: return
@@ -57,16 +57,13 @@ class Vertex():
 
         return
 
-    def UpdateDistanceAndReturnAnimation(self, newDistance: float, liveUpdateVisuals: bool) -> ValueTracker:
+    def UpdateDistanceAndReturnAnimation(self, newDistance: float) -> ValueTracker:
         self.distance = newDistance
-
-        if not liveUpdateVisuals: return None
 
         return self.distanceTracker
     
     def ResetDistance(self) -> ValueTracker:
-        self.distance = float("inf")
         self.previousVertex = None
         self.visited = False
 
-        return self.distanceTracker
+        return self.UpdateDistanceAndReturnAnimation(float("inf"))

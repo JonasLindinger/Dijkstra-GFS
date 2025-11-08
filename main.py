@@ -3,7 +3,6 @@ from vertex import *
 from edge import *
 from graph import *
 from dijkstra import *
-import random
 
 class GFS(Scene):
     def construct(self):
@@ -11,8 +10,6 @@ class GFS(Scene):
         self.Intro()
         self.WhatIs()
         self.Lazy()
-        # self.basics()
-        # self.shortestPathProblem()
 
     def Intro(self):
         # Topic title
