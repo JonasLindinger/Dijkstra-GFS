@@ -111,11 +111,29 @@ class GFS(Scene):
 
         self.wait(1)
 
+        self.showLazyV1_1UML()
+
+        self.wait(1)
+
     def showLazyV1UML(self):
         # Partly AI Generated
         # Load the SVG (adjust the path as needed)
         svg = SVGMobject("Lazy Dijkstra v1.svg")
-        svg.scale(0.75)
+        svg.set_width(12)
+        svg.center()
+
+        # Just show it — no animation
+        self.play(Write(svg))
+
+        self.wait(1)
+
+        self.play(Unwrite(svg))
+
+    def showLazyV1_1UML(self):
+        # Partly AI Generated
+        # Load the SVG (adjust the path as needed)
+        svg = SVGMobject("Lazy Dijkstra v1.1.svg")
+        svg.set_width(12)
         svg.center()
 
         # Just show it — no animation
