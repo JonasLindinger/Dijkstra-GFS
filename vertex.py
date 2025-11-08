@@ -1,5 +1,6 @@
 from manim import *
 import math as math
+from math import isinf, isnan
 
 class Vertex():
     def __init__(self, name: str, position, color, withDistance: bool):
@@ -10,6 +11,7 @@ class Vertex():
 
         # Runtime data that the dijkstra changes
         self.distance = float("inf")
+        self.distanceTracker = ValueTracker(float("inf"))
         self.visited: bool = False
         self.previousVertex: Vertex = None
 
@@ -31,6 +33,19 @@ class Vertex():
             text,
         ).scale(0.5)
 
+        if (withDistance):
+            vertex.add(
+                always_redraw(
+                    lambda: Text(
+                        "∞" if isinf(self.distanceTracker.get_value())
+                        else str(round(self.distanceTracker.get_value()))
+                        , color=RED
+                        , font_size=20 if isinf(self.distanceTracker.get_value())
+                        else 16
+                    ).move_to(visual.get_center() + DOWN * 0.25, aligned_edge=DOWN)
+                )
+            )
+
         return vertex
     
     def UpdateDistance(self, scene: Scene, newDistance: float, liveUpdateVisuals: bool):
@@ -38,30 +53,20 @@ class Vertex():
 
         if not liveUpdateVisuals: return
 
-        if len(self.visual) != 4: return
-        old_text: Text = self.visual[3]
-        new_text: Text = Text(str(newDistance), color=old_text[0].get_fill_color(), font_size=18).move_to(old_text)
-        scene.play(
-            Transform(old_text, new_text),
-            run_time=1
-        )
-        old_text = new_text
+        self.distanceTracker.set_value(self.distance)
 
-    def UpdateDistanceAndReturnAnimation(self, scene: Scene, newDistance: float, liveUpdateVisuals: bool) -> tuple[Transform, Text, Text]:
+        return
+
+    def UpdateDistanceAndReturnAnimation(self, newDistance: float, liveUpdateVisuals: bool) -> ValueTracker:
         self.distance = newDistance
 
-        if not liveUpdateVisuals: return
+        if not liveUpdateVisuals: return None
 
-        if len(self.visual) != 4: return
-        old_text: Text = self.visual[3]
-        new_text: Text = Text(str(newDistance), color=old_text[0].get_fill_color(), font_size=18).move_to(old_text)
-
-        return (Transform(old_text, new_text), old_text, new_text)
+        return self.distanceTracker
     
-    def ResetDistance(self, scene: Scene) -> Transform:
+    def ResetDistance(self) -> ValueTracker:
         self.distance = float("inf")
+        self.previousVertex = None
+        self.visited = False
 
-        old_text: Text = self.visual[3]
-        new_text: Text = Text("∞", color=old_text[0].get_fill_color(), font_size=18).move_to(old_text)
-
-        return Transform(old_text, new_text)
+        return self.distanceTracker

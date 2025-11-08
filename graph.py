@@ -6,7 +6,7 @@ class Graph():
     def __init__(self, vertices, edges):
         self.vertices: list = vertices
         self.edges: list = edges
-        self.group: Group = self.generate_group(True)
+        self.group: Group = Group()
         self.displayed_distances = False
 
     # Creating and displaying the graph
@@ -21,16 +21,11 @@ class Graph():
             visual = vertex.visual
             circle = visual[0]  # Circle
             text = visual[1]    # Text
+            distance = visual[2]
             animations.append(Create(circle))
             animations.append(Write(text))
+            animations.append(Write(distance))
             graphGroup.add(visual)
-
-        if showDistances:
-            for vertex in self.vertices:
-                distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
-                vertex.visual.add(distanceText)
-                scene.add(distanceText)
-                graphGroup.add(distanceText)
 
         # Add every edge to the animations
         for edge in self.edges:
@@ -53,12 +48,6 @@ class Graph():
         for vertex in self.vertices:
             visual = vertex.visual
             graphGroup.add(visual)
-
-        if showDistances:
-            for vertex in self.vertices:
-                distanceText = Text("∞", color=RED, font_size=20).move_to(vertex.visual[0].get_center() + DOWN * 0.25, aligned_edge=DOWN)
-                vertex.visual.add(distanceText)
-                graphGroup.add(distanceText)
 
         # Add every edge to the animations
         for edge in self.edges:
@@ -84,18 +73,9 @@ class Graph():
         endingVertexIndex: int = len(self.vertices) - 1 # -1 makes it an index. We assume, that the ending vertex is at the end
         path: list = self.GetShortestPath(scene, self.vertices, startingVertexIndex, endingVertexIndex)
 
-        animations: list = []
-        texts: list = []
-
         for vertex in self.vertices:
-            transform, old_text, new_text = vertex.UpdateDistanceAndReturnAnimation(scene, vertex.distance, True)
-            animations.append(transform)
-            texts.append((old_text, new_text))
-
-        scene.play(*animations, run_time=1)
-
-        for old_text, new_text in texts:
-            old_text.become(new_text)
+            tracker: ValueTracker = vertex.UpdateDistanceAndReturnAnimation(vertex.distance, True)
+            tracker.set_value(vertex.distance)
 
         for i in range(len(path)):
             vertex: Vertex = path[i]
@@ -110,7 +90,9 @@ class Graph():
         animations: list = []
 
         for vertex in self.vertices:
-            animations.append(vertex.ResetDistance(scene))
+            tracker: ValueTracker = vertex.ResetDistance()
+            tracker.set_value(vertex.distance)
+            #animations.append(tracker.set_value(vertex.distance))
 
         for vertex in self.vertices:
             circle: Circle = vertex.visual[0]
@@ -164,31 +146,68 @@ class Graph():
 
     # Lazy Dijkstra
     def RunLazy(self, scene: Scene, vertecies: list, startingVertexIndex: int, liveUpdateVisuals):
+        # 1. Init variables 
+
+        # 1.1. Set the starting vertex to a distance of 0 
         vertecies[startingVertexIndex].UpdateDistance(scene, 0, liveUpdateVisuals)
+
+        # 1.2.Create the priotity queue and append the startingVertex
         priorityQueue: list = []
         priorityQueue.append((startingVertexIndex, 0)) # index, distance
 
+        # While the priority Queue isn't empty
         while len(priorityQueue) != 0:
+            # 2.1. Get nearest vertex from the priority queue and remove the item from the list
             item = self.GetTheNearestItem(priorityQueue)
             priorityQueue.remove(item)
+
+            # 2.2. Get the index of the vertex in the vertecies list
             index: int = item[0]
             # distance: float = item[1]
 
+            # 2.3. Mark the vertex as visited
             vertecies[index].visited = True
+
+            # Visuals
+            if (liveUpdateVisuals):
+                self.HighlightVertex(scene, vertecies[index], 0.5)
+
+            # Go through every outgoing edge of this vertex
             for edge in vertecies[index].outgoingEdges:
+                # 3.1. Get the index of the vbertex the edge points at.
                 edgeVertexIndex: int = vertecies.index(edge.to)
+
+                # If the vertex is visited, skip it
                 if vertecies[edgeVertexIndex].visited: continue
+
+                # Visuals
+                if (liveUpdateVisuals):
+                    self.HighlightEdge(scene, edge, 0.5)
+
+                # 3.2. Calculate the distance if we went to the vertex vie the current vertex of the edge it points at.
                 newDistance: float = vertecies[index].distance + edge.weight
+
+                # If the distance if less then the old distance (default is infinity), update it.
                 if newDistance < vertecies[edgeVertexIndex].distance:
+                    # 4.1. Update distance and mark the vertexes previousVertex to the current Vertex to later find the shortest path.
                     vertecies[edgeVertexIndex].previousVertex = vertecies[index]
                     vertecies[edgeVertexIndex].UpdateDistance(scene, newDistance, liveUpdateVisuals)
                     
+                    # 4.2 When the vertex the edge points to, is in our list, remove it.
                     vertexIndex: int = self.GetIndexFromFirstItemOfAToupleOfAList(priorityQueue, edgeVertexIndex)
                     if (vertexIndex != -1): # If we found it, remove it
                         priorityQueue.pop(vertexIndex)
 
-                    # Add it
+                    # 4.3 Add the vertex the edge points to, to the priority queue
                     priorityQueue.append((edgeVertexIndex, newDistance))
+
+                    # Visuals
+                    if (liveUpdateVisuals):
+                        self.UnhighlightEdge(scene, edge, 0.5)
+
+            # Visuals
+            if (liveUpdateVisuals):
+                self.UnhighlightVertex(scene, vertecies[index], 0.5)
     
     # Returns a list from the starting node to the end node that contains every vertex which is part of the shortest path.
     def GetShortestPath(self, scene: Scene, vertecies: list, startingVertexIndex: int, endingVertexIndex) -> list:
