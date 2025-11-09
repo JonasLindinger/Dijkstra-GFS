@@ -119,8 +119,7 @@ class GFS(Scene):
         # Partly AI Generated
         # Load the SVG (adjust the path as needed)
         svg = SVGMobject("Lazy Dijkstra v1.svg")
-        svg.set_width(12)
-        svg.center()
+        svg.set_width(12).center().shift(DOWN * 0.1)
 
         # Just show it — no animation
         self.play(Write(svg))
@@ -133,8 +132,7 @@ class GFS(Scene):
         # Partly AI Generated
         # Load the SVG (adjust the path as needed)
         svg = SVGMobject("Lazy Dijkstra v1.1.svg")
-        svg.set_width(12)
-        svg.center()
+        svg.set_width(12).center().shift(DOWN * 0.1)
 
         # Just show it — no animation
         self.play(Write(svg))

@@ -4,9 +4,9 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>90</x>
-      <y>315</y>
-      <w>300</w>
+      <x>60</x>
+      <y>45</y>
+      <w>315</w>
       <h>150</h>
     </coordinates>
     <panel_attributes>Vertex
@@ -14,14 +14,15 @@
 + distance: float = Infinity
 + visited: boolean = false
 --
-+ Vertex() &lt;&lt;constructor&gt;&gt;</panel_attributes>
++ Vertex() &lt;&lt;constructor&gt;&gt;
++ SetUp(Edge[] outgoingEdges)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>660</x>
-      <y>315</y>
+      <x>645</x>
+      <y>45</y>
       <w>570</w>
       <h>150</h>
     </coordinates>
@@ -35,8 +36,8 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>375</x>
-      <y>330</y>
+      <x>360</x>
+      <y>60</y>
       <w>315</w>
       <h>60</h>
     </coordinates>
@@ -47,8 +48,8 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>375</x>
-      <y>375</y>
+      <x>360</x>
+      <y>105</y>
       <w>315</w>
       <h>60</h>
     </coordinates>
@@ -59,13 +60,93 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>375</x>
-      <y>420</y>
+      <x>360</x>
+      <y>150</y>
       <w>315</w>
       <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 1 to</panel_attributes>
     <additional_attributes>10.0;20.0;190.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>60</x>
+      <y>360</y>
+      <w>405</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Graph
+--
+
+--
++ Graph() &lt;&lt;constructor&gt;&gt;
++ RunLazyDijkstra(int startingVertexIndex)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>105</x>
+      <y>180</y>
+      <w>135</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+* vertices[]</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>675</x>
+      <y>180</y>
+      <w>120</w>
+      <h>135</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+* edges[]</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>255</y>
+      <w>450</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-
+</panel_attributes>
+    <additional_attributes>10.0;20.0;280.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>270</y>
+      <w>45</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>645</x>
+      <y>360</y>
+      <w>285</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>Programm
+--
+
+--
++ Programm() &lt;&lt;constructor&gt;&gt;
++ main(args: String[])
+- GetGraphA(): Graph</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>
