@@ -99,6 +99,7 @@ class GFS(Scene):
         self.remove(new_underline)
 
         self.showLazyV1UML()
+        self.showLazyV1JavaCode();
 
         self.play(self.demo_graph.group.animate.shift(UP * 10))
 
@@ -140,6 +141,190 @@ class GFS(Scene):
         self.wait(1)
 
         self.play(Unwrite(svg))
+
+    def showLazyV1JavaCode(self):
+        vertexCode = '''public class Vertex {
+    public float distance = Float.POSITIVE_INFINITY;
+    public boolean visited = false;
+    public Edge[] outgoingEdges;
+
+    public Vertex() {
+        
+    }
+
+    public void SetUp(Edge[] outgoingEdges) {
+        this.outgoingEdges = outgoingEdges;
+    }
+}'''
+        vertex_rendered_code = Code(
+            code_string=vertexCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).shift(LEFT * 3.5)
+        vertex_rendered_code.height = 3
+
+        edgeCode = '''public class Edge {
+    public float weight;
+    public Vertex start;
+    public Vertex to;
+
+    public Edge(Vertex start, Vertex to, float weight) {
+        this.start =  start;
+        this.to = to;
+        this.weight = weight;
+    }
+}
+'''
+        edge_rendered_code = Code(
+            code_string=edgeCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).shift(RIGHT * 3.5)
+        edge_rendered_code.height = 3
+
+        self.play(
+            Write(vertex_rendered_code),            
+            Write(edge_rendered_code),
+            run_time=1
+        )
+        self.wait(2)
+        self.play(
+            FadeOut(vertex_rendered_code),            
+            FadeOut(edge_rendered_code),
+            run_time=0.5
+        )
+
+        programmCode = '''public class Programm {
+    public static void main(String[] args) {
+        Graph graph = GetGraphA();
+        graph.RunLazyDijkstra(0);
+
+        for (Vertex vertex : graph.vertices) {
+            System.out.println(vertex.distance);
+        }
+    }    
+
+    private static Graph GetGraphA() {
+        Vertex start = new Vertex();
+        Vertex a = new Vertex();
+        Vertex b = new Vertex();
+        Vertex c = new Vertex();
+        Vertex target = new Vertex();
+
+        Edge SA = new Edge(start, a, 4);        
+        Edge SB = new Edge(start, b, 1);
+        Edge BA = new Edge(b, a, 2);
+        Edge BC = new Edge(b, c, 5);
+        Edge AC = new Edge(a, c, 1);
+        Edge CT = new Edge(c, target, 3);
+
+        start.SetUp(new Edge[] { SA, SB });        
+        a.SetUp(new Edge[] { AC });
+        b.SetUp(new Edge[] { BA, BC });
+        c.SetUp(new Edge[] { CT });
+        target.SetUp(new Edge[] { });
+
+        Vertex[] vertices = new Vertex[] {
+            start,
+            a, 
+            b, 
+            c, 
+            target
+        };
+
+        Edge[] edges = new Edge[] {
+            SA,
+            SB,
+            BA,
+            BC,
+            AC,
+            CT
+        };
+
+        Graph graph = new Graph(vertices, edges);
+
+        return graph;
+    }
+}
+'''
+        programm_rendered_code = Code(
+            code_string=programmCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        programm_rendered_code.width = 8
+        programm_rendered_code.shift(DOWN * 5).shift(RIGHT * 2);
+
+        self.play(Write(programm_rendered_code), run_time=1)
+        self.wait(1)
+        self.play(programm_rendered_code.animate.shift(UP * 8.25), run_time=2)
+        self.wait(1)
+        self.play(FadeOut(programm_rendered_code), run_time=0.5)
+        self.wait(1)
+
+        graphCode = '''import java.util.PriorityQueue;
+
+public class Graph {
+    public Vertex[] vertices;
+    public Edge[] edges;
+
+    public Graph(Vertex[] vertices, Edge[] edges) {
+        this.vertices = vertices;
+        this.edges = edges;
+    }
+    
+    public void RunLazyDijkstra(int startingVertexIndex) {
+        PriorityQueue<Vertex> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.distance, b.distance)
+        );
+
+        Vertex startingVertex = vertices[startingVertexIndex];
+
+        startingVertex.distance = 0;
+        priorityQueue.add(startingVertex);
+
+        while (!priorityQueue.isEmpty()) {
+            Vertex vertex = priorityQueue.poll();
+
+            vertex.visited = true;
+
+            for (Edge edge : vertex.outgoingEdges) {
+                Vertex neighbor = edge.to;
+
+                if (neighbor.visited) continue;
+
+                float newDistance = vertex.distance + edge.weight;
+
+                if (newDistance < neighbor.distance) {
+                    neighbor.distance = newDistance;
+
+                    priorityQueue.remove(neighbor);
+
+                    priorityQueue.add(neighbor);
+                }
+            }
+        }
+    }
+}
+'''
+        graph_rendered_code = Code(
+            code_string=graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        graph_rendered_code.width = 9
+        graph_rendered_code.shift(DOWN * 2.5).shift(RIGHT * 2.5);
+    
+        self.play(Write(graph_rendered_code), run_time=1)
+        self.wait(1)
+        self.play(graph_rendered_code.animate.shift(UP * 2.75), run_time=2)
+        self.wait(1)
+        self.play(FadeOut(graph_rendered_code), run_time=0.5)
+        self.wait(1)
 
     def basics(self):
         # Animate menu removal and title change
