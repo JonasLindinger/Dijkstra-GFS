@@ -89,10 +89,6 @@ class GFS(Scene):
         new_text = Text("Lazy Dijkstra").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
         new_underline = Underline(new_text, buff=0)
 
-        self.showLazyV1UML()
-
-        self.play(self.demo_graph.group.animate.shift(UP * 10))
-
         self.play(
             Transform(self.first, new_text),
             Transform(self.underline, new_underline),
@@ -101,6 +97,10 @@ class GFS(Scene):
 
         self.remove(new_text)        
         self.remove(new_underline)
+
+        self.showLazyV1UML()
+
+        self.play(self.demo_graph.group.animate.shift(UP * 10))
 
         self.demo_graph.resetVisuals(self)
 

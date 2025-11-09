@@ -12,7 +12,7 @@
     <panel_attributes>Vertex
 --
 + distance: float = Infinity
-+ visited: boolean
++ visited: boolean = false
 --
 + Vertex() &lt;&lt;constructor&gt;&gt;</panel_attributes>
     <additional_attributes/>
@@ -65,7 +65,7 @@
       <h>48</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-1 from</panel_attributes>
+1 to</panel_attributes>
     <additional_attributes>10.0;20.0;190.0;20.0</additional_attributes>
   </element>
   <element>
