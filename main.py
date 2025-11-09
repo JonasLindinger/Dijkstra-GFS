@@ -104,7 +104,6 @@ class GFS(Scene):
         self.play(self.demo_graph.group.animate.shift(UP * 10))
 
         self.demo_graph.resetVisuals(self)
-
         self.demo_graph.solve(self, True)
         self.demo_graph.highlight_solution(self)
 
@@ -113,6 +112,13 @@ class GFS(Scene):
         self.wait(1)
 
         self.showLazyV1_1UML()
+        self.showLazyV1_1JavaCode();
+
+        self.play(self.demo_graph.group.animate.shift(UP * 10))
+
+        self.demo_graph.resetVisuals(self)
+        self.demo_graph.solve(self, True)
+        self.demo_graph.highlight_solution(self)
 
         self.wait(1)
 
@@ -325,6 +331,39 @@ public class Graph {
         self.wait(1)
         self.play(FadeOut(graph_rendered_code), run_time=0.5)
         self.wait(1)
+
+    def showLazyV1_1JavaCode(self):
+        vertexCode = '''public class Vertex {
+    public float distance = Float.POSITIVE_INFINITY;
+    public boolean visited = false;
+    public Edge[] outgoingEdges;
+    public Vertex previousVertex;
+
+    public Vertex() {
+        
+    }
+
+    public void SetUp(Edge[] outgoingEdges) {
+        this.outgoingEdges = outgoingEdges;
+    }
+}'''
+        vertex_rendered_code = Code(
+            code_string=vertexCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).shift(DOWN * 0.5)
+        vertex_rendered_code.width = 10
+    
+        self.play(
+            Write(vertex_rendered_code),
+            run_time=1
+        )
+        self.wait(2)
+        self.play(
+            FadeOut(vertex_rendered_code),
+            run_time=0.5
+        )
 
     def basics(self):
         # Animate menu removal and title change
