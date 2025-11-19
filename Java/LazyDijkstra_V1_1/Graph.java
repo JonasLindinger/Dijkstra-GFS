@@ -1,5 +1,7 @@
-package LazyDijkstra_V1;
+package LazyDijkstra_V1_1;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class Graph {
@@ -37,11 +39,31 @@ public class Graph {
                 // Check if this is a better way
                 if (newDistance < neighbor.distance) {
                     neighbor.distance = newDistance;
+                    neighbor.previousVertex = vertexEntry.vertex;
 
                     // Add. This can create duplicates. but is O(log(n)) which is better than O(n).
                     priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
                 }
             }
         }
+    }
+
+    public Vertex[] GetShortestPath(int endingVertexIndex) {
+        List<Vertex> path = new ArrayList<>();
+        
+        if (vertices[endingVertexIndex].distance == Float.POSITIVE_INFINITY) {
+            System.out.println("Run Dijkstra first!");
+            return new Vertex[0];
+        }
+
+        Vertex currentVertex = vertices[endingVertexIndex];
+        while (currentVertex != null) {
+            path.add(currentVertex);
+            currentVertex = currentVertex.previousVertex;
+        }
+
+        path = path.reversed(); // O(1) : )
+
+        return path.toArray(new Vertex[0]);
     }
 }

@@ -1,3 +1,5 @@
+package LazyDijkstra_V3;
+
 public class Vertex {
     public float distance = Float.POSITIVE_INFINITY;
     public boolean visited = false;

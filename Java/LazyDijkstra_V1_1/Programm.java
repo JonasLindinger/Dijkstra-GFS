@@ -1,11 +1,11 @@
-package LazyDijkstra_V1;
+package LazyDijkstra_V1_1;
 
 public class Programm {
     public static void main(String[] args) {
         Graph graph = GetGraphA();
         graph.RunLazyDijkstra(0);
 
-        for (Vertex vertex : graph.vertices) {
+        for (Vertex vertex : graph.GetShortestPath(graph.vertices.length - 1)) {
             System.out.println(vertex.distance);
         }
     }    

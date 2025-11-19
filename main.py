@@ -122,11 +122,14 @@ class GFS(Scene):
 
         self.wait(1)
 
+    def bigO(self):
+        ...
+
     def showLazyV1UML(self):
         # Partly AI Generated
         # Load the SVG (adjust the path as needed)
         svg = SVGMobject("Lazy Dijkstra v1.svg")
-        svg.set_width(12).center().shift(DOWN * 0.1)
+        svg.set_width(12).center().shift(DOWN * 0.5)
 
         # Just show it — no animation
         self.play(Write(svg))
@@ -138,15 +141,25 @@ class GFS(Scene):
     def showLazyV1_1UML(self):
         # Partly AI Generated
         # Load the SVG (adjust the path as needed)
-        svg = SVGMobject("Lazy Dijkstra v1.1.svg")
-        svg.set_width(12).center().shift(DOWN * 0.1)
+        svg = SVGMobject("Lazy Dijkstra v1.svg")
+        svg.set_width(12).center().shift(DOWN * 0.5)
 
         # Just show it — no animation
         self.play(Write(svg))
 
         self.wait(1)
 
-        self.play(Unwrite(svg))
+        # Partly AI Generated
+        # Load the SVG (adjust the path as needed)
+        new_svg = SVGMobject("Lazy Dijkstra v1.1.svg")
+        new_svg.set_width(12).center().shift(DOWN * 0.5)
+
+        # Just show it — no animation
+        self.play(FadeOut(svg), FadeIn(new_svg), rate_func=linear)
+
+        self.wait(1)
+
+        self.play(Unwrite(new_svg))
 
     def showLazyV1JavaCode(self):
         vertexCode = '''public class Vertex {
@@ -283,33 +296,31 @@ public class Graph {
     }
     
     public void RunLazyDijkstra(int startingVertexIndex) {
-        PriorityQueue<Vertex> priorityQueue = new PriorityQueue<>(
-            (a, b) -> Float.compare(a.distance, b.distance)
+        PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.value, b.value)
         );
 
         Vertex startingVertex = vertices[startingVertexIndex];
 
         startingVertex.distance = 0;
-        priorityQueue.add(startingVertex);
+        priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
 
         while (!priorityQueue.isEmpty()) {
-            Vertex vertex = priorityQueue.poll();
+            VertexEntry vertexEntry = priorityQueue.poll();
 
-            vertex.visited = true;
+            vertexEntry.vertex.visited = true;
 
-            for (Edge edge : vertex.outgoingEdges) {
+            for (Edge edge : vertexEntry.vertex.outgoingEdges) {
                 Vertex neighbor = edge.to;
 
                 if (neighbor.visited) continue;
 
-                float newDistance = vertex.distance + edge.weight;
+                float newDistance = vertexEntry.vertex.distance + edge.weight;
 
                 if (newDistance < neighbor.distance) {
                     neighbor.distance = newDistance;
 
-                    priorityQueue.remove(neighbor);
-
-                    priorityQueue.add(neighbor);
+                    priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
                 }
             }
         }
@@ -323,11 +334,9 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         graph_rendered_code.width = 9
-        graph_rendered_code.shift(DOWN * 2.5).shift(RIGHT * 2.5);
+        graph_rendered_code.shift(DOWN * 0.6).shift(RIGHT * 2.5);
     
         self.play(Write(graph_rendered_code), run_time=1)
-        self.wait(1)
-        self.play(graph_rendered_code.animate.shift(UP * 2.75), run_time=2)
         self.wait(1)
         self.play(FadeOut(graph_rendered_code), run_time=0.5)
         self.wait(1)
@@ -337,7 +346,7 @@ public class Graph {
     public float distance = Float.POSITIVE_INFINITY;
     public boolean visited = false;
     public Edge[] outgoingEdges;
-    public Vertex previousVertex;
+
 
     public Vertex() {
         
@@ -359,11 +368,154 @@ public class Graph {
             Write(vertex_rendered_code),
             run_time=1
         )
-        self.wait(2)
-        self.play(
-            FadeOut(vertex_rendered_code),
-            run_time=0.5
-        )
+        
+        self.wait(1)
+
+        new_vertexCode = '''public class Vertex {
+    public float distance = Float.POSITIVE_INFINITY;
+    public boolean visited = false;
+    public Edge[] outgoingEdges;
+    public Vertex previousVertex;
+
+    public Vertex() {
+        
+    }
+
+    public void SetUp(Edge[] outgoingEdges) {
+        this.outgoingEdges = outgoingEdges;
+    }
+}'''
+        new_vertex_rendered_code = Code(
+            code_string=new_vertexCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).shift(DOWN * 0.5)
+        new_vertex_rendered_code.width = 10
+
+        self.play(ReplacementTransform(vertex_rendered_code, new_vertex_rendered_code), run_time=1, rate_func=linear)
+
+        self.wait(1)
+        
+        self.play(FadeOut(new_vertex_rendered_code))
+
+        self.wait(1)
+
+        graphCode = '''import java.util.PriorityQueue;
+
+public class Graph {
+    public Vertex[] vertices;
+    public Edge[] edges;
+
+    public Graph(Vertex[] vertices, Edge[] edges) {
+        this.vertices = vertices;
+        this.edges = edges;
+    }
+    
+    public void RunLazyDijkstra(int startingVertexIndex) {
+        PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.value, b.value)
+        );
+
+        Vertex startingVertex = vertices[startingVertexIndex];
+
+        startingVertex.distance = 0;
+        priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
+
+        while (!priorityQueue.isEmpty()) {
+            VertexEntry vertexEntry = priorityQueue.poll();
+
+            vertexEntry.vertex.visited = true;
+
+            for (Edge edge : vertexEntry.vertex.outgoingEdges) {
+                Vertex neighbor = edge.to;
+
+                if (neighbor.visited) continue;
+
+                float newDistance = vertexEntry.vertex.distance + edge.weight;
+
+                if (newDistance < neighbor.distance) {
+                    neighbor.distance = newDistance;
+
+
+                    priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
+                }
+            }
+        }
+    }
+}
+'''
+        graph_rendered_code = Code(
+            code_string=graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        graph_rendered_code.width = 9
+        graph_rendered_code.shift(DOWN * 0.6).shift(RIGHT * 2.5);
+
+        self.play(Write(graph_rendered_code))
+    
+        self.wait(1)
+
+        new_graphCode = '''import java.util.PriorityQueue;
+
+    public class Graph {
+        public Vertex[] vertices;
+        public Edge[] edges;
+
+        public Graph(Vertex[] vertices, Edge[] edges) {
+            this.vertices = vertices;
+            this.edges = edges;
+        }
+        
+        public void RunLazyDijkstra(int startingVertexIndex) {
+            PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+                (a, b) -> Float.compare(a.value, b.value)
+            );
+
+            Vertex startingVertex = vertices[startingVertexIndex];
+
+            startingVertex.distance = 0;
+            priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
+
+            while (!priorityQueue.isEmpty()) {
+                VertexEntry vertexEntry = priorityQueue.poll();
+
+                vertexEntry.vertex.visited = true;
+
+                for (Edge edge : vertexEntry.vertex.outgoingEdges) {
+                    Vertex neighbor = edge.to;
+
+                    if (neighbor.visited) continue;
+
+                    float newDistance = vertexEntry.vertex.distance + edge.weight;
+
+                    if (newDistance < neighbor.distance) {
+                        neighbor.distance = newDistance;
+                        neighbor.previousVertex = vertexEntry.vertex;
+
+                        priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
+                    }
+                }
+            }
+        }
+    }
+    '''
+        new_graph_rendered_code = Code(
+            code_string=new_graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        new_graph_rendered_code.width = 9
+        new_graph_rendered_code.shift(DOWN * 0.6).shift(RIGHT * 2.5);
+    
+        self.play(ReplacementTransform(graph_rendered_code, new_graph_rendered_code), run_time=1, rate_fun=linear)
+
+        self.wait(1)
+
+        self.play(FadeOut(new_graph_rendered_code))
 
     def basics(self):
         # Animate menu removal and title change

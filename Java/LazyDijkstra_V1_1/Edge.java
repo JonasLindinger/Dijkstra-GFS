@@ -1,4 +1,4 @@
-package LazyDijkstra_V1;
+package LazyDijkstra_V1_1;
 
 public class Edge {
     public float weight;

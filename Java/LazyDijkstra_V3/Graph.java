@@ -1,3 +1,5 @@
+package LazyDijkstra_V3;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -11,41 +13,44 @@ public class Graph {
         this.edges = edges;
     }
     
-    public void RunLazyDijkstra(int startingVertexIndex) {
-        PriorityQueue<Vertex> priorityQueue = new PriorityQueue<>(
-            (a, b) -> Float.compare(a.distance, b.distance)
+    public void RunLazyDijkstra(int startingVertexIndex, int endingVertexIndex) { // Added endingVertexIndex for stopping early
+        PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.value, b.value)
         );
 
         Vertex startingVertex = vertices[startingVertexIndex];
+        Vertex endingVertex = vertices[endingVertexIndex];
 
         startingVertex.distance = 0;
-        priorityQueue.add(startingVertex);
+        priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
 
         while (!priorityQueue.isEmpty()) {
-            Vertex vertex = priorityQueue.poll();
+            VertexEntry vertexEntry = priorityQueue.poll();
 
-            vertex.visited = true;
+            vertexEntry.vertex.visited = true;
+
+            if (vertexEntry.vertex.distance < vertexEntry.value)
+                continue; // We have found a better way to this vertex
 
             // Foreach edge in outgoing edges
-            for (Edge edge : vertex.outgoingEdges) {
+            for (Edge edge : vertexEntry.vertex.outgoingEdges) {
                 Vertex neighbor = edge.to;
 
                 if (neighbor.visited) continue;
 
-                float newDistance = vertex.distance + edge.weight;
+                float newDistance = vertexEntry.vertex.distance + edge.weight;
 
                 // Check if this is a better way
                 if (newDistance < neighbor.distance) {
                     neighbor.distance = newDistance;
-                    neighbor.previousVertex = vertex;
+                    neighbor.previousVertex = vertexEntry.vertex;
 
-                    // If the vertex is already in the queue, remove it
-                    priorityQueue.remove(neighbor); // This is O(n)...!
-
-                    // Add
-                    priorityQueue.add(neighbor);
+                    // Add. This can create duplicates. but is O(log(n)) which is better than O(n).
+                    priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
                 }
             }
+
+            if (vertexEntry.vertex == endingVertex) return; // Check if we are at the ending of the vertex
         }
     }
 

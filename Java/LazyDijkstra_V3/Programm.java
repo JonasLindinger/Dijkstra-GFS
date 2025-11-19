@@ -1,7 +1,9 @@
+package LazyDijkstra_V3;
+
 public class Programm {
     public static void main(String[] args) {
         Graph graph = GetGraphA();
-        graph.RunLazyDijkstra(0);
+        graph.RunLazyDijkstra(0,  graph.vertices.length - 1);
 
         for (Vertex vertex : graph.GetShortestPath(graph.vertices.length - 1)) {
             System.out.println(vertex.distance);

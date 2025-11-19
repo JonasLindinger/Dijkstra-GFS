@@ -1,3 +1,5 @@
+package LazyDijkstra_V3;
+
 public class Edge {
     public float weight;
     public Vertex start;
