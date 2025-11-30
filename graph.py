@@ -59,11 +59,17 @@ class Graph():
 
         return self.group 
 
-    def solve(self, scene: Scene, liveUpdateVisuals: bool):
+    def solveWithLazy(self, scene: Scene, liveUpdateVisuals: bool):
         if self.group == None:
             self.write(scene, True)
 
         self.RunLazy(scene, self.vertices, 0, liveUpdateVisuals)
+
+    def solveWithOptimizedLazy(self, scene: Scene, liveUpdateVisuals: bool):
+        if self.group == None:
+            self.write(scene, True)
+
+        self.RunLazyOptimized(scene, self.vertices, 0, len(self.vertices) - 1 , liveUpdateVisuals)
 
     def highlight_solution(self, scene: Scene):
         if self.group == None:
@@ -173,7 +179,7 @@ class Graph():
 
             # Go through every outgoing edge of this vertex
             for edge in vertecies[index].outgoingEdges:
-                # 3.1. Get the index of the vbertex the edge points at.
+                # 3.1. Get the index of the vertex the edge points at.
                 edgeVertexIndex: int = vertecies.index(edge.to)
 
                 # If the vertex is visited, skip it
@@ -207,6 +213,78 @@ class Graph():
             # Visuals
             if (liveUpdateVisuals):
                 self.UnhighlightVertex(scene, vertecies[index], 0.5)
+
+    def RunLazyOptimized(self, scene: Scene, vertecies: list, startingVertexIndex: int, endingVertexIndex: int, liveUpdateVisuals):
+        # 1. Init variables 
+
+        # 1.1. Set the starting vertex to a distance of 0 
+        vertecies[startingVertexIndex].UpdateDistance(0, liveUpdateVisuals)
+
+        # 1.2.Create the priotity queue and append the startingVertex
+        priorityQueue: list = []
+        priorityQueue.append((startingVertexIndex, 0)) # index, distance
+
+        endingVertex: Vertex = vertecies[endingVertexIndex]
+
+        # While the priority Queue isn't empty
+        while len(priorityQueue) != 0:
+            # 2.1. Get nearest vertex from the priority queue and remove the item from the list
+            item = self.GetTheNearestItem(priorityQueue)
+            priorityQueue.remove(item)
+
+            # 2.2. Get the index of the vertex in the vertecies list
+            index: int = item[0]
+            distance: float = item[1]
+
+            # 2.3. Mark the vertex as visited
+            vertecies[index].visited = True
+
+            if vertecies[index].distance < distance:
+                continue
+
+            # Visuals
+            if (liveUpdateVisuals):
+                self.HighlightVertex(scene, vertecies[index], 0.5)
+
+            # Go through every outgoing edge of this vertex
+            for edge in vertecies[index].outgoingEdges:
+                # 3.1. Get the index of the vertex the edge points at.
+                edgeVertexIndex: int = vertecies.index(edge.to)
+
+                # If the vertex is visited, skip it
+                if vertecies[edgeVertexIndex].visited: continue
+
+                # Visuals
+                if (liveUpdateVisuals):
+                    self.HighlightEdge(scene, edge, 0.5)
+
+                # 3.2. Calculate the distance if we went to the vertex vie the current vertex of the edge it points at.
+                newDistance: float = vertecies[index].distance + edge.weight
+
+                # If the distance if less then the old distance (default is infinity), update it.
+                if newDistance < vertecies[edgeVertexIndex].distance:
+                    # 4.1. Update distance and mark the vertexes previousVertex to the current Vertex to later find the shortest path.
+                    vertecies[edgeVertexIndex].previousVertex = vertecies[index]
+                    vertecies[edgeVertexIndex].UpdateDistance(newDistance, liveUpdateVisuals)
+                    
+                    # 4.2 When the vertex the edge points to, is in our list, remove it.
+                    vertexIndex: int = self.GetIndexFromFirstItemOfAToupleOfAList(priorityQueue, edgeVertexIndex)
+                    if (vertexIndex != -1): # If we found it, remove it
+                        priorityQueue.pop(vertexIndex)
+
+                    # 4.3 Add the vertex the edge points to, to the priority queue
+                    priorityQueue.append((edgeVertexIndex, newDistance))
+
+                    # Visuals
+                    if (liveUpdateVisuals):
+                        self.UnhighlightEdge(scene, edge, 0.5)
+
+            # Visuals
+            if (liveUpdateVisuals):
+                self.UnhighlightVertex(scene, vertecies[index], 0.5)
+
+            if (vertecies[index] == endingVertex):
+                return
     
     # Returns a list from the starting node to the end node that contains every vertex which is part of the shortest path.
     def GetShortestPath(self, scene: Scene, vertecies: list, startingVertexIndex: int, endingVertexIndex) -> list:

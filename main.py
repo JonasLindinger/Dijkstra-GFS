@@ -10,6 +10,8 @@ class GFS(Scene):
         self.Intro()
         self.WhatIs()
         self.Lazy()
+        self.LazyOptimizations()
+        self.ShowLimitations()
 
     def Intro(self):
         # Topic title
@@ -23,8 +25,8 @@ class GFS(Scene):
 
         # Gliederung
         self.first  = Text("1. Was ist der Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
-        self.second = Text("2. Das Problem des kürzesten Weges.").scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
-        self.third  = Text("3. Was ist der Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 1, 0], aligned_edge=LEFT)
+        self.second = Text("2. Lazy Dijkstra").scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
+        self.third  = Text("3. Lazy Dijkstra Optimierungen").scale(.5).move_to([-6.5, 1, 0], aligned_edge=LEFT)
         self.fourth = Text("4. Wo wird der Dijkstra Algorithmus genutzt?").scale(.5).move_to([-6.5, 0.5, 0], aligned_edge=LEFT)
         self.fifth  = Text("5. Wie funktioniert der Lazy Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 0, 0], aligned_edge=LEFT)
 
@@ -63,9 +65,9 @@ class GFS(Scene):
         award = Text("Turing Award (1972)", font_size=24).next_to(img, RIGHT, buff=0.3)
     
         self.play(Write(name), run_time=1)
-        self.wait(0.5)
+        self.wait(2)
         self.play(Write(country), run_time=1)
-        self.wait(0.5)
+        self.wait(2)
         self.play(Write(award), run_time=1)
 
         hidePersonalInfo: AnimationGroup = AnimationGroup(
@@ -75,15 +77,14 @@ class GFS(Scene):
             Unwrite(award, run_time=1),
         )
 
-        self.wait(1)
+        self.wait(2)
         self.play(hidePersonalInfo, run_time=1)
+        self.wait(2)
         
         self.demo_graph = self.GetGraphA([0, 0, 0], True)
         self.demo_graph.write(self, True)
-        self.wait(1)
+        self.wait(2)
         self.demo_graph.highlight_solution(self)
-
-        self.play(self.demo_graph.group.animate.shift(DOWN * 10))
 
     def Lazy(self):
         new_text = Text("Lazy Dijkstra").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
@@ -98,29 +99,99 @@ class GFS(Scene):
         self.remove(new_text)        
         self.remove(new_underline)
 
-        self.showLazyV1UML()
-        self.showLazyV1JavaCode();
-
-        self.play(self.demo_graph.group.animate.shift(UP * 10))
-
         self.demo_graph.resetVisuals(self)
-        self.demo_graph.solve(self, True)
-        self.demo_graph.highlight_solution(self)
+        self.wait(2)
+        self.demo_graph.solveWithLazy(self, True)
+        self.wait(2)
 
         self.play(self.demo_graph.group.animate.shift(DOWN * 10))
 
-        self.wait(1)
+        self.showLazyV1UML()
+        self.showLazyV1JavaCode()
 
-        self.showLazyV1_1UML()
-        self.showLazyV1_1JavaCode();
+        self.wait(2)
 
         self.play(self.demo_graph.group.animate.shift(UP * 10))
 
+        self.wait(2)
         self.demo_graph.resetVisuals(self)
-        self.demo_graph.solve(self, True)
+        self.demo_graph.solveWithLazy(self, True)
+        self.wait(2)
         self.demo_graph.highlight_solution(self)
+        self.wait(2)
+
+        self.play(self.demo_graph.group.animate.shift(DOWN * 10))
+
+        self.showLazyV1_1UML()
+        self.showLazyV1_1JavaCode()
+        self.showGetShortestPathJavaCode()
+
+        self.play(self.demo_graph.group.animate.shift(UP * 10))
 
         self.wait(1)
+
+    def LazyOptimizations(self):
+        new_text = Text("Lazy Dijkstra Optimierungen").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
+        new_underline = Underline(new_text, buff=0)
+
+        self.play(
+            Transform(self.first, new_text),
+            Transform(self.underline, new_underline),
+            run_time=1,
+        )
+
+        self.remove(new_text)        
+        self.remove(new_underline)
+
+        self.wait(2)
+
+        self.play(self.demo_graph.group.animate.shift(DOWN * 10), self.first.animate.shift(UP * 3), self.underline.animate.shift(UP * 3))
+
+        self.wait(2)
+
+        self.showLazyV2JavaCode()
+
+        self.wait(2)
+
+        self.play(self.first.animate.shift(DOWN * 3), self.underline.animate.shift(DOWN * 3))
+        self.demo_graph_2 = self.GetGraphB([0, 0, 0], True)
+        self.demo_graph_2.write(self, True)
+        self.demo_graph_2.solveWithLazy(self, True)
+        self.demo_graph_2.highlight_solution(self)
+
+        self.play(self.demo_graph_2.group.animate.shift(DOWN * 10), self.first.animate.shift(UP * 3), self.underline.animate.shift(UP * 3))
+
+        self.showLazyV3JavaCode()
+
+        self.demo_graph_2.resetVisuals(self)
+
+        self.play(self.demo_graph_2.group.animate.shift(UP * 10), self.first.animate.shift(DOWN * 3), self.underline.animate.shift(DOWN * 3))
+
+        self.demo_graph_2.solveWithOptimizedLazy(self, True)
+        self.play(self.demo_graph_2.group.animate.shift(DOWN * 10))
+
+        self.wait(2)
+
+    def ShowLimitations(self):
+        new_text = Text("Dijkstra Limitierungen").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
+        new_underline = Underline(new_text, buff=0)
+
+        self.play(
+            Transform(self.first, new_text),
+            Transform(self.underline, new_underline),
+            run_time=1,
+        )
+
+        self.remove(new_text)        
+        self.remove(new_underline)
+
+        self.demo_graph_3 = self.GetGraphC([0, 0, 0], True)
+        self.demo_graph_3.write(self, True)
+        self.wait(2)
+        self.demo_graph_3.solveWithLazy(self, False)
+        self.demo_graph_3.highlight_solution(self)
+
+        self.wait(2)
 
     def bigO(self):
         ...
@@ -393,7 +464,7 @@ public class Graph {
         ).shift(DOWN * 0.5)
         new_vertex_rendered_code.width = 10
 
-        self.play(ReplacementTransform(vertex_rendered_code, new_vertex_rendered_code), run_time=1, rate_func=linear)
+        self.play(FadeOut(vertex_rendered_code), FadeIn(new_vertex_rendered_code),  run_time=1, rate_func=linear)
 
         self.wait(1)
         
@@ -511,77 +582,295 @@ public class Graph {
         new_graph_rendered_code.width = 9
         new_graph_rendered_code.shift(DOWN * 0.6).shift(RIGHT * 2.5);
     
-        self.play(ReplacementTransform(graph_rendered_code, new_graph_rendered_code), run_time=1, rate_fun=linear)
+        self.play(FadeOut(graph_rendered_code), FadeIn(new_graph_rendered_code), run_time=1, rate_fun=linear)
 
         self.wait(1)
 
         self.play(FadeOut(new_graph_rendered_code))
 
-    def basics(self):
-        # Animate menu removal and title change
-        self.basicsText = Text("Grundlagen").scale(1.5).scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT)
-        self.basicsTextUnderline = Underline(self.basicsText, buff=0)
+    def showGetShortestPathJavaCode(self):
+        shortestPathCode = '''public Vertex[] GetShortestPath(int endingVertexIndex) {
+        List<Vertex> path = new ArrayList<>();
+        
+        if (vertices[endingVertexIndex].distance == Float.POSITIVE_INFINITY) {
+            System.out.println("Run Dijkstra first!");
+            return new Vertex[0];
+        }
 
-        self.play(
-            Unwrite(self.first, run_time=0.75), Unwrite(self.second, run_time=0.75),
-            Unwrite(self.third, run_time=0.75), Unwrite(self.fourth, run_time=0.75), Unwrite(self.fifth, run_time=0.75),
-            Transform(self.title, self.basicsText, run_time=1),
-            Transform(self.underline, self.basicsTextUnderline, run_time=1),
-        )
+        Vertex currentVertex = vertices[endingVertexIndex];
+        while (currentVertex != null) {
+            path.add(currentVertex);
+            currentVertex = currentVertex.previousVertex;
+        }
 
+        path = path.reversed();
+
+        return path.toArray(new Vertex[0]);
+    }
+'''
+        shortestPath_rendered_code = Code(
+            code_string=shortestPathCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        shortestPath_rendered_code.width = 9
+
+        self.play(Write(shortestPath_rendered_code))
+    
         self.wait(1)
 
-        graph: Graph = self.GetGraphA([0, 0, 0], False)
+        self.play(FadeOut(shortestPath_rendered_code))
 
-        self.graphGroup: Group = self.DisplayGraph(graph, False)
+    def showLazyV2JavaCode(self):
+        graphCode = '''import java.util.PriorityQueue;
 
-        vertexText: Text = Text("Vertex (sg), Vertices (pl)", color=RED).scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
-        self.graphGroup.add(vertexText)
-        self.animations.clear()
+    public class Graph {
+        public Vertex[] vertices;
+        public Edge[] edges;
+
+        public Graph(Vertex[] vertices, Edge[] edges) {
+            this.vertices = vertices;
+            this.edges = edges;
+        }
         
-        for vertex in graph.vertices:
-            circle: Circle = vertex.visual[0]
-            name: Text = vertex.visual[1]
-            self.animations.append(circle.animate.set_color(RED))
-            self.animations.append(name.animate.set_color(RED))
-        
-        self.animations.append(Write(vertexText))
+        public void RunLazyDijkstra(int startingVertexIndex) {
+            PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+                (a, b) -> Float.compare(a.value, b.value)
+            );
 
-        self.play(*self.animations)
+            Vertex startingVertex = vertices[startingVertexIndex];
 
-        edgeText: Text = Text("Edge (sg), Edges (pl)", color=GREEN).scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
-        self.graphGroup.add(edgeText)
-        self.animations.clear()
-        
-        for edge in graph.edges:
-            arrow: Arrow = edge.visual[0]
-            self.animations.append(arrow.animate.set_fill(GREEN))
-            self.animations.append(arrow.animate.set_color(GREEN))
+            startingVertex.distance = 0;
+            priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
 
-        self.animations.append(Write(edgeText))
+            while (!priorityQueue.isEmpty()) {
+                VertexEntry vertexEntry = priorityQueue.poll();
 
-        self.play(*self.animations)
-        
-        self.animations.clear()
+                vertexEntry.vertex.visited = true;
+
+                
+
+
+                for (Edge edge : vertexEntry.vertex.outgoingEdges) {
+                    Vertex neighbor = edge.to;
+
+                    if (neighbor.visited) continue;
+
+                    float newDistance = vertexEntry.vertex.distance + edge.weight;
+
+                    if (newDistance < neighbor.distance) {
+                        neighbor.distance = newDistance;
+                        neighbor.previousVertex = vertexEntry.vertex;
+
+                        priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
+                    }
+                }
+            }
+        }
+    }
+'''
+        graph_rendered_code = Code(
+            code_string=graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        graph_rendered_code.width = 12
+        graph_rendered_code.shift(DOWN * 0.6)
+        graph_rendered_code.shift(DOWN * 1)
+
+        self.play(Write(graph_rendered_code))
+    
+        self.wait(1)
+
+        new_graphCode = '''import java.util.PriorityQueue;
+
+public class Graph {
+    public Vertex[] vertices;
+    public Edge[] edges;
+
+    public Graph(Vertex[] vertices, Edge[] edges) {
+        this.vertices = vertices;
+        this.edges = edges;
+    }
+    
+    public void RunLazyDijkstra(int startingVertexIndex) {
+        PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.value, b.value)
+        );
+
+        Vertex startingVertex = vertices[startingVertexIndex];
+
+        startingVertex.distance = 0;
+        priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
+
+        while (!priorityQueue.isEmpty()) {
+            VertexEntry vertexEntry = priorityQueue.poll();
+
+            vertexEntry.vertex.visited = true;
+
+            if (vertexEntry.vertex.distance < vertexEntry.value)
+                continue;
+
+            for (Edge edge : vertexEntry.vertex.outgoingEdges) {
+                Vertex neighbor = edge.to;
+
+                if (neighbor.visited) continue;
+
+                float newDistance = vertexEntry.vertex.distance + edge.weight;
+
+                if (newDistance < neighbor.distance) {
+                    neighbor.distance = newDistance;
+                    neighbor.previousVertex = vertexEntry.vertex;
+
+                    priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
+                }
+            }
+        }
+    }
+}
+    '''
+        new_graph_rendered_code = Code(
+            code_string=new_graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        new_graph_rendered_code.height = graph_rendered_code.height
+        new_graph_rendered_code.shift(DOWN * 1.6)
+    
+        self.play(FadeOut(graph_rendered_code), FadeIn(new_graph_rendered_code), run_time=1, rate_fun=linear)
 
         self.wait(2)
 
-    def shortestPathProblem(self):
-        # Animate transition
-        self.sppText = Text("Das Problem des kürzesten Weges.").scale(1.5).scale(0.7).move_to([-6.5, 3, 0], aligned_edge=LEFT)
-        self.sppTextUnderline = Underline(self.sppText, buff=0)
+        self.play(FadeOut(new_graph_rendered_code))
 
-        dot: Dot = Dot([0, 0, 0], 0, color=ORANGE)
+    def showLazyV3JavaCode(self):
+        graphCode = '''import java.util.PriorityQueue;
 
-        self.play(
-            ReplacementTransform(self.graphGroup, dot),
-            ReplacementTransform(self.basicsText, self.sppText),
-            ReplacementTransform(self.basicsTextUnderline, self.sppTextUnderline),
-        )
+public class Graph {
+    public Vertex[] vertices;
+    public Edge[] edges;
 
+    public Graph(Vertex[] vertices, Edge[] edges) {
+        this.vertices = vertices;
+        this.edges = edges;
+    }
+    
+    public void RunLazyDijkstra(int startingVertexIndex) {
+        PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.value, b.value)
+        );
+
+        Vertex startingVertex = vertices[startingVertexIndex];
+
+        startingVertex.distance = 0;
+        priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
+
+        while (!priorityQueue.isEmpty()) {
+            VertexEntry vertexEntry = priorityQueue.poll();
+
+            vertexEntry.vertex.visited = true;
+
+            if (vertexEntry.vertex.distance < vertexEntry.value)
+                continue;
+
+            for (Edge edge : vertexEntry.vertex.outgoingEdges) {
+                Vertex neighbor = edge.to;
+
+                if (neighbor.visited) continue;
+
+                float newDistance = vertexEntry.vertex.distance + edge.weight;
+
+                if (newDistance < neighbor.distance) {
+                    neighbor.distance = newDistance;
+                    neighbor.previousVertex = vertexEntry.vertex;
+
+                    priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
+                }
+            }
+        }
+    }
+}
+'''
+        graph_rendered_code = Code(
+            code_string=graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        graph_rendered_code.width = 12
+        graph_rendered_code.shift(DOWN * 1.6)
+
+        self.play(Write(graph_rendered_code))
+    
         self.wait(1)
 
-        # Todo: fix text overlap
+        new_graphCode = '''import java.util.PriorityQueue;
+
+public class Graph {
+    public Vertex[] vertices;
+    public Edge[] edges;
+
+    public Graph(Vertex[] vertices, Edge[] edges) {
+        this.vertices = vertices;
+        this.edges = edges;
+    }
+    
+    public void RunLazyDijkstra(int startingVertexIndex, int endingVertexIndex) {
+        PriorityQueue<VertexEntry> priorityQueue = new PriorityQueue<>(
+            (a, b) -> Float.compare(a.value, b.value)
+        );
+
+        Vertex startingVertex = vertices[startingVertexIndex];
+        Vertex endingVertex = vertices[endingVertexIndex];
+
+        startingVertex.distance = 0;
+        priorityQueue.add(new VertexEntry(startingVertex, startingVertex.distance));
+
+        while (!priorityQueue.isEmpty()) {
+            VertexEntry vertexEntry = priorityQueue.poll();
+
+            vertexEntry.vertex.visited = true;
+
+            if (vertexEntry.vertex.distance < vertexEntry.value)
+                continue;
+
+            for (Edge edge : vertexEntry.vertex.outgoingEdges) {
+                Vertex neighbor = edge.to;
+
+                if (neighbor.visited) continue;
+
+                float newDistance = vertexEntry.vertex.distance + edge.weight;
+
+                if (newDistance < neighbor.distance) {
+                    neighbor.distance = newDistance;
+                    neighbor.previousVertex = vertexEntry.vertex;
+
+                    priorityQueue.add(new VertexEntry(neighbor, neighbor.distance));
+                }
+            }
+
+            if (vertexEntry.vertex == endingVertex) return;
+        }
+    }
+}
+    '''
+        new_graph_rendered_code = Code(
+            code_string=new_graphCode,
+            tab_width=10,
+            language="Java",
+            background="window",  # optional: "rectangle", "window", None
+        ).scale(0.5)
+        new_graph_rendered_code.height = graph_rendered_code.height
+        new_graph_rendered_code.shift(DOWN * 1.6)
+    
+        self.play(FadeOut(graph_rendered_code), FadeIn(new_graph_rendered_code), run_time=1, rate_fun=linear)
+
+        self.wait(2)
+
+        self.play(FadeOut(new_graph_rendered_code))
 
     def GetGraphA(self, position, showDistances: bool) -> Graph:
         # Create all vertices
@@ -602,6 +891,66 @@ public class Graph {
         # Create the array
         vertices: list = [vStart, vA, vB, vC, vTarget]
         edges: list = [startToA, startToB, bToA, bToC, aToC, cToTarget]
+
+        # Create the graph
+        graph: Graph = Graph(vertices, edges)
+
+        return graph
+    
+    def GetGraphB(self, position, showDistances: bool) -> Graph:
+        # Create all vertices
+        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-4, 0, 0]), WHITE, showDistances)
+        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-2, 2, 0]), WHITE, showDistances)
+        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-2, -2, 0]), WHITE, showDistances)
+        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), WHITE, showDistances)
+        vD: Vertex = Vertex("D", self.LocalToWorldPosition(position, [-4, -3, 0]), WHITE, showDistances)
+        vE: Vertex = Vertex("E", self.LocalToWorldPosition(position, [3, -3, 0]), WHITE, showDistances)
+        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), WHITE, showDistances)
+
+        # Create all edges
+        startToA: Edge = Edge(vStart, vA, 4, color=LIGHT_GRAY)
+        startToB: Edge = Edge(vStart, vB, 1, color=LIGHT_GRAY)
+        bToA: Edge = Edge(vB, vA, 2, color=LIGHT_GRAY)
+        bToC: Edge = Edge(vB, vC, 5, color=LIGHT_GRAY)
+        aToC: Edge = Edge(vA, vC, 1, color=LIGHT_GRAY)
+        startToD: Edge = Edge(vStart, vD, 100, color=LIGHT_GRAY)
+        dToE: Edge = Edge(vD, vE, 1, color=LIGHT_GRAY)
+        eToTarget: Edge = Edge(vE, vTarget, 1, color=LIGHT_GRAY)
+        cToTarget: Edge = Edge(vC, vTarget, 3, color=LIGHT_GRAY)
+
+        # Create the array
+        vertices: list = [vStart, vA, vB, vC, vD, vE, vTarget]
+        edges: list = [startToA, startToB, bToA, bToC, aToC, cToTarget, startToD, dToE, eToTarget]
+
+        # Create the graph
+        graph: Graph = Graph(vertices, edges)
+
+        return graph
+    
+    def GetGraphC(self, position, showDistances: bool) -> Graph:
+        # Create all vertices
+        vStart: Vertex = Vertex("S", self.LocalToWorldPosition(position, [-4, 0, 0]), WHITE, showDistances)
+        vA: Vertex = Vertex("A", self.LocalToWorldPosition(position, [-2, 2, 0]), WHITE, showDistances)
+        vB: Vertex = Vertex("B", self.LocalToWorldPosition(position, [-2, -2, 0]), WHITE, showDistances)
+        vC: Vertex = Vertex("C", self.LocalToWorldPosition(position, [0, 0, 0]), WHITE, showDistances)
+        vD: Vertex = Vertex("D", self.LocalToWorldPosition(position, [-4, -3, 0]), WHITE, showDistances)
+        vE: Vertex = Vertex("E", self.LocalToWorldPosition(position, [3, -3, 0]), WHITE, showDistances)
+        vTarget: Vertex = Vertex("Z", self.LocalToWorldPosition(position, [3, 0, 0]), WHITE, showDistances)
+
+        # Create all edges
+        startToA: Edge = Edge(vStart, vA, 4, color=LIGHT_GRAY)
+        startToB: Edge = Edge(vStart, vB, 1, color=LIGHT_GRAY)
+        bToA: Edge = Edge(vB, vA, 2, color=LIGHT_GRAY)
+        bToC: Edge = Edge(vB, vC, 5, color=LIGHT_GRAY)
+        aToC: Edge = Edge(vA, vC, 1, color=LIGHT_GRAY)
+        startToD: Edge = Edge(vStart, vD, 100, color=LIGHT_GRAY)
+        dToE: Edge = Edge(vD, vE, -100, color=LIGHT_GRAY)
+        eToTarget: Edge = Edge(vE, vTarget, 1, color=LIGHT_GRAY)
+        cToTarget: Edge = Edge(vC, vTarget, 3, color=LIGHT_GRAY)
+
+        # Create the array
+        vertices: list = [vStart, vA, vB, vC, vD, vE, vTarget]
+        edges: list = [startToA, startToB, bToA, bToC, aToC, cToTarget, startToD, dToE, eToTarget]
 
         # Create the graph
         graph: Graph = Graph(vertices, edges)
