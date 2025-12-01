@@ -11,6 +11,7 @@ class GFS(Scene):
         self.WhatIs()
         self.Lazy()
         self.LazyOptimizations()
+        self.EagerDijkstra()
         self.ShowLimitations()
 
     def Intro(self):
@@ -169,6 +170,89 @@ class GFS(Scene):
 
         self.demo_graph_2.solveWithOptimizedLazy(self, True)
         self.play(self.demo_graph_2.group.animate.shift(DOWN * 10))
+
+        self.wait(2)
+
+    def EagerDijkstra(self):
+        new_text = Text("Eager Dijkstra").move_to([-6.5, 3, 0], aligned_edge=LEFT).scale(1.0)
+        new_underline = Underline(new_text, buff=0)
+
+        self.play(
+            Transform(self.first, new_text),
+            Transform(self.underline, new_underline),
+            run_time=1,
+        )
+
+        self.remove(new_text)        
+        self.remove(new_underline)
+
+        self.wait(2)
+
+        change = Text("Priority Queue -> Indexed Priority Queue").scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
+
+        self.play(Write(change))
+
+        self.wait(2)
+
+        self.play(Unwrite(change))
+
+        f1 = lambda x: 1
+        f2 = lambda x: x
+        f3 = lambda x: np.log2(x)
+
+        axes_small = Axes(
+            x_range=[1, 10, 1],
+            y_range=[0, 10, 1],
+            x_length=12,
+            y_length=5,
+            axis_config={"include_numbers": True}
+        ).shift(DOWN * 0.35)
+
+        labels_small = axes_small.get_axis_labels("Elements", "Operations")
+
+        g1_small = axes_small.plot(f1, color=BLUE)
+        g2_small = axes_small.plot(f2, color=YELLOW)
+        g3_small = axes_small.plot(f3, color=RED)
+
+        g1_label = Text("O(1)", color=BLUE, font_size=18).move_to([-2, -3.6, 0], aligned_edge=LEFT)
+        g2_label = Text("O(n)", color=YELLOW, font_size=18).move_to([0, -3.6, 0], aligned_edge=LEFT)
+        g3_label = Text("O(log(n))", color=RED, font_size=18).move_to([2, -3.6, 0], aligned_edge=LEFT)
+
+        labels = VGroup(g1_label, g2_label, g3_label)
+
+        self.play(Write(axes_small), Write(labels_small))
+        self.wait(2)
+        self.play(Write(g1_small), Write(g1_label))
+        self.wait(2)
+        self.play(Write(g2_small), Write(g2_label))
+        self.wait(2)
+        self.play(Write(g3_small), Write(g3_label))
+
+        group_small = VGroup(axes_small, labels_small, g1_small, g2_small, g3_small)
+
+        self.wait(1)
+
+        axes_large = Axes(
+            x_range=[1, 1000, 200],
+            y_range=[0, 1000, 200],
+            x_length=12,
+            y_length=5,
+            axis_config={"include_numbers": True}
+        ).shift(DOWN * 0.35)
+        
+        labels_large = axes_large.get_axis_labels("Elements", "Operations")
+
+        g1_large = axes_large.plot(f1, color=BLUE)
+        g2_large = axes_large.plot(f2, color=YELLOW)
+        g3_large = axes_large.plot(f3, color=RED)
+
+        group_large = VGroup(axes_large, labels_large, g1_large, g2_large, g3_large)
+
+        self.play(Transform(group_small, group_large), run_time=3)
+
+        self.wait(2)
+
+        self.play(Unwrite(group_small), Unwrite(labels))
 
         self.wait(2)
 
@@ -677,8 +761,7 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         graph_rendered_code.width = 12
-        graph_rendered_code.shift(DOWN * 0.6)
-        graph_rendered_code.shift(DOWN * 1)
+        graph_rendered_code.shift(DOWN * 1.8)
 
         self.play(Write(graph_rendered_code))
     
@@ -738,7 +821,7 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         new_graph_rendered_code.height = graph_rendered_code.height
-        new_graph_rendered_code.shift(DOWN * 1.6)
+        graph_rendered_code.shift(DOWN * 1.8)
     
         self.play(FadeOut(graph_rendered_code), FadeIn(new_graph_rendered_code), run_time=1, rate_fun=linear)
 
@@ -801,10 +884,10 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         graph_rendered_code.width = 12
-        graph_rendered_code.shift(DOWN * 1.6)
+        graph_rendered_code.shift(DOWN * 2)
 
         self.play(Write(graph_rendered_code))
-    
+        
         self.wait(1)
 
         new_graphCode = '''import java.util.PriorityQueue;
@@ -864,9 +947,11 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         new_graph_rendered_code.height = graph_rendered_code.height
-        new_graph_rendered_code.shift(DOWN * 1.6)
+        new_graph_rendered_code.shift(DOWN * 2)
     
         self.play(FadeOut(graph_rendered_code), FadeIn(new_graph_rendered_code), run_time=1, rate_fun=linear)
+        self.wait(2)
+        self.play(new_graph_rendered_code.animate.shift(UP * 4))
 
         self.wait(2)
 
