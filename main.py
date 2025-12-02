@@ -2,7 +2,6 @@ from manim import *
 from vertex import *
 from edge import *
 from graph import *
-from dijkstra import *
 
 class GFS(Scene):
     def construct(self):
