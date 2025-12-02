@@ -28,8 +28,8 @@ class GFS(Scene):
         self.first  = Text("1. Was ist der Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 2, 0], aligned_edge=LEFT)
         self.second = Text("2. Lazy Dijkstra").scale(.5).move_to([-6.5, 1.5, 0], aligned_edge=LEFT)
         self.third  = Text("3. Lazy Dijkstra Optimierungen").scale(.5).move_to([-6.5, 1, 0], aligned_edge=LEFT)
-        self.fourth = Text("4. Wo wird der Dijkstra Algorithmus genutzt?").scale(.5).move_to([-6.5, 0.5, 0], aligned_edge=LEFT)
-        self.fifth  = Text("5. Wie funktioniert der Lazy Dijkstra Algorithmus?").scale(.5).move_to([-6.5, 0, 0], aligned_edge=LEFT)
+        self.fourth = Text("4. Eager Dijkstra").scale(.5).move_to([-6.5, 0.5, 0], aligned_edge=LEFT)
+        self.fifth  = Text("5. Limitierungen").scale(.5).move_to([-6.5, 0, 0], aligned_edge=LEFT)
 
         self.play(
             Write(self.first, run_time=1), Write(self.second, run_time=1),
