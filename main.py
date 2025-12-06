@@ -108,6 +108,7 @@ class GFS(Scene):
 
         self.showLazyV1UML()
         self.showLazyV1JavaCode()
+        self.priorityQueue()
 
         self.wait(2)
 
@@ -276,8 +277,162 @@ class GFS(Scene):
 
         self.wait(2)
 
-    def bigO(self):
-        ...
+    def priorityQueue(self):
+        rect: VGroup = VGroup(Rectangle(height=1, width=1, fill_opacity=0, color=RED), Text("1"))
+        r1: VGroup = VGroup(Rectangle(height=1, width=1, fill_opacity=0), Text("1"))
+        r2: VGroup = VGroup(Rectangle(height=1, width=1, fill_opacity=0), Text("2"))
+        r3: VGroup = VGroup(Rectangle(height=1, width=1, fill_opacity=0), Text("3"))
+        r4: VGroup = VGroup(Rectangle(height=1, width=1, fill_opacity=0), Text("4"))
+        r5: VGroup = VGroup(Rectangle(height=1, width=1, fill_opacity=0), Text("5"))
+
+        self.play(Write(rect))
+
+        group: VGroup = VGroup(
+            r1,
+            r2,
+            r3,
+            r4,
+            r5,
+        )
+        rects: VGroup = VGroup(
+            r1[0],
+            r2[0],
+            r3[0],
+            r4[0],
+            r5[0],
+        )
+
+        group.arrange()
+        rects.set_color_by_gradient(RED, ORANGE, YELLOW_C, PURE_GREEN)
+
+        self.play(ReplacementTransform(rect, group))
+
+        self.wait(1)
+
+        self.play(r1.animate.shift(LEFT * 20))
+        group.remove(r1)
+        rects.remove(r1[0])
+        self.play(group.animate.arrange())
+        self.play(rects.animate.set_color_by_gradient(RED, ORANGE, YELLOW_C, PURE_GREEN))
+
+        r1.move_to([0, 0, 0])
+        r1.shift(RIGHT * 4)
+        self.play(Write(r1))
+        self.play(group.animate.arrange())
+
+        self.play(
+            r2.animate.shift(UP * 1.2),
+            r3.animate.shift(UP * 1.2),
+            r4.animate.shift(UP * 1.2),
+            r5.animate.shift(UP * 1.2),
+        )
+        self.play(r1.animate.next_to(r2, LEFT + (DOWN * 1.2)))
+        
+        group.remove(r1)
+        group.insert(0, r1)
+        rects.remove(r1[0])
+        rects.insert(0, r1[0])
+
+        self.play(group.animate.arrange())
+        self.play(rects.animate.set_color_by_gradient(RED, ORANGE, YELLOW_C, PURE_GREEN))
+
+        self.wait(1)
+
+        # Show content per entry
+        animations: list = []
+        for r in group:
+            content: Rectangle = Rectangle(height=1, width=1, fill_opacity=1, color=GRAY).next_to(r[0], DOWN)
+            r.add(content)
+            animations.append(Write(content))
+
+        self.play(*animations)
+        self.play(group.animate.arrange())
+
+        # Turn into binary tree
+        c1 = VGroup(Circle(0.5), Text("1")).shift(UP * 2)
+        c2 = VGroup(Circle(0.5), Text("2")).shift(UP * 0 + LEFT * 1.5)
+        c3 = VGroup(Circle(0.5), Text("3")).shift(UP * 0 + RIGHT * 1.5)
+        c4 = VGroup(Circle(0.5), Text("4")).shift(DOWN * 2 + LEFT * 2.25)
+        c5 = VGroup(Circle(0.5), Text("5")).shift(DOWN * 2 + LEFT * 0.75)
+
+        l1 = self.GetLine(c1[0], c2[0], GRAY)
+        l2 = self.GetLine(c1[0], c3[0], GRAY)
+        l3 = self.GetLine(c2[0], c4[0], GRAY)
+        l4 = self.GetLine(c2[0], c5[0], GRAY)
+
+        circles: VGroup = VGroup(
+            c1,
+            c2,
+            c3,
+            c4,
+            c5,
+            l1,
+            l2,
+            l3,
+            l4,
+        )
+
+        self.play(ReplacementTransform(group, circles))
+
+        self.wait(2)
+
+        # extract min
+        self.play(c1.animate.shift(UP * 10))
+
+        # rebalance
+        self.play(c2[0].animate.set_color(YELLOW))
+        self.play(c2[0].animate.set_color(RED))
+        self.play(c3[0].animate.set_color(YELLOW))
+        self.play(c3[0].animate.set_color(RED))
+        self.play(c2.animate.move_to([0, 2, 0]))
+        self.play(c4[0].animate.set_color(YELLOW))
+        self.play(c4[0].animate.set_color(RED))
+        self.play(c5[0].animate.set_color(YELLOW))
+        self.play(c5[0].animate.set_color(RED))
+        self.play(c4.animate.move_to([-1.5, 0, 0]), FadeOut(l3))
+
+        self.wait(1)
+
+        c1.move_to([2, -2, 0])
+        self.play(Write(c1))
+        self.play(
+            c1.animate.move_to([-2.25, -2, 0]),
+            Write(l3),
+        )
+        self.play(c1[0].animate.set_color(YELLOW))
+        self.play(c4[0].animate.set_color(YELLOW))
+        self.play(
+            c1.animate.move_to(c4.get_center()),
+            c4.animate.move_to(c1.get_center()),
+        )
+        self.play(c4[0].animate.set_color(RED))
+        self.play(c2[0].animate.set_color(YELLOW))
+        self.play(
+            c1[0].animate.set_color(RED),
+            c2[0].animate.set_color(RED),
+            c1.animate.move_to(c2.get_center()),
+            c2.animate.move_to(c1.get_center()),
+        )
+        self.play(
+            c1[0].animate.set_color(RED),
+            c2[0].animate.set_color(RED),
+        )
+
+        self.play(FadeOut(circles))
+
+        self.wait(1)
+
+    def GetLine(self, c1: Circle, c2: Circle, color) -> Line:
+        # direction from c1 → c2
+        direction = c2.get_center() - c1.get_center()
+
+        # compute touching points
+        start = c1.get_center() + direction / np.linalg.norm(direction) * c1.radius
+        end   = c2.get_center() - direction / np.linalg.norm(direction) * c2.radius
+
+        line = Line(start, end, color=color)
+
+        return line
 
     def showLazyV1UML(self):
         # Partly AI Generated
