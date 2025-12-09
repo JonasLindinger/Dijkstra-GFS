@@ -915,7 +915,7 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         graph_rendered_code.width = 12
-        graph_rendered_code.shift(DOWN * 1.8)
+        graph_rendered_code.shift(DOWN * 1.9)
 
         self.play(Write(graph_rendered_code))
     
@@ -975,7 +975,7 @@ public class Graph {
             background="window",  # optional: "rectangle", "window", None
         ).scale(0.5)
         new_graph_rendered_code.height = graph_rendered_code.height
-        graph_rendered_code.shift(DOWN * 1.8)
+        new_graph_rendered_code.shift(DOWN * 1.9)
     
         self.play(FadeOut(graph_rendered_code), FadeIn(new_graph_rendered_code), run_time=1, rate_fun=linear)
 
