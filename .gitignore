@@ -5,8 +5,8 @@ __pycache__/
 output/
 
 # media/ was previously ignored — now allowed.
-# Only ignore .mp4 files inside media/
-media/*.mp4
+# Only ignore .mp4 files inside media/ or its subfolder
+media/**/*.mp4
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
